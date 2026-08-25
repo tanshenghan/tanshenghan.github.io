@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en" data-lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Shenghan Tan (谭圣涵) — master's student at Beihang University, working on embodied intelligence and vision-and-language navigation." />
+    <meta name="theme-color" content="#f6f7f9" />
+    <title>Shenghan Tan · Beihang University</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip-link lang-en" href="#main">Skip to content</a>
+    <a class="skip-link lang-zh" href="#main">跳至主要内容</a>
+
+    <header class="site-header">
+      <div class="nav-shell">
+        <a class="brand" href="#home" aria-label="Shenghan Tan homepage">
+          <span class="brand-seal" role="img" aria-label="Beihang University logo"></span>
+          <span>
+            <strong><span class="lang-en">Shenghan Tan</span><span class="lang-zh">谭圣涵</span></strong>
+            <small><span class="lang-en">Beihang University</span><span class="lang-zh">北京航空航天大学</span></small>
+          </span>
+        </a>
+
+        <nav class="desktop-nav" aria-label="Primary navigation">
+          <a class="active" href="#home"><span class="lang-en">Home</span><span class="lang-zh">主页</span></a>
+          <a href="#publications"><span class="lang-en">Publications</span><span class="lang-zh">论文</span></a>
+          <a href="#projects"><span class="lang-en">Projects</span><span class="lang-zh">项目</span></a>
+          <a href="#experience"><span class="lang-en">Experience</span><span class="lang-zh">实习</span></a>
+        </nav>
+
+        <div class="header-actions">
+          <button class="language-toggle" type="button" aria-label="切换中英文">中</button>
+          <button class="theme-toggle" type="button" aria-label="Toggle color theme">◐</button>
+          <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav"><span class="lang-en">Menu</span><span class="lang-zh">菜单</span></button>
+        </div>
+
+        <nav class="mobile-nav" id="mobile-nav" aria-label="Mobile navigation" hidden>
+          <a href="#home"><span class="lang-en">Home</span><span class="lang-zh">主页</span></a>
+          <a href="#publications"><span class="lang-en">Publications</span><span class="lang-zh">论文</span></a>
+          <a href="#projects"><span class="lang-en">Projects</span><span class="lang-zh">项目经历</span></a>
+          <a href="#experience"><span class="lang-en">Experience</span><span class="lang-zh">实习经历</span></a>
+          <a href="#education"><span class="lang-en">Education</span><span class="lang-zh">教育经历</span></a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="profile-section page-shell" id="home">
+        <div class="section-heading reveal">
+          <h1><span class="lang-en">About <em>(Shenghan Tan)</em></span><span class="lang-zh">关于 <em>（谭圣涵）</em></span></h1>
+          <p><span class="lang-en">M.S. @ BUAA · Embodied Intelligence · VLN</span><span class="lang-zh">北航硕士生 · 具身智能 · VLN</span></p>
+        </div>
+
+        <div class="profile-grid">
+          <aside class="identity reveal">
+            <div class="portrait">
+              <img src="./assets/profile.jpg" alt="谭圣涵 / Shenghan Tan" />
+            </div>
+            <h2><span class="lang-en">Shenghan Tan</span><span class="lang-zh">谭圣涵</span></h2>
+            <p><span class="lang-en">Master’s Student</span><span class="lang-zh">硕士研究生</span></p>
+            <p><span class="lang-en">School of Cyber Science and Technology</span><span class="lang-zh">网络空间安全学院</span></p>
+            <p><span class="lang-en">Beihang University</span><span class="lang-zh">北京航空航天大学</span></p>
+            <div class="social-links" aria-label="Academic and contact profiles">
+              <a href="mailto:tanshenghan@buaa.edu.cn">BUAA Mail ↗</a>
+              <a href="mailto:yohjishong0523@gmail.com">Gmail ↗</a>
+              <a href="https://scholar.google.com/citations?user=uX6HkUwAAAAJ" target="_blank" rel="noreferrer">Scholar ↗</a>
+            </div>
+          </aside>
+
+          <div class="biography reveal">
+            <div class="lang-en">
+              <p class="lead">Hi, I’m <strong>Shenghan Tan</strong>, a master’s student at the School of Cyber Science and Technology, <a href="https://www.buaa.edu.cn/" target="_blank" rel="noreferrer">Beihang University</a>.</p>
+              <p>I received my bachelor’s degree from Beihang University in 2025 and continued here for my graduate study.</p>
+              <p>My research path has moved from <strong>AI safety</strong> and <strong>recommender systems</strong> toward <strong>embodied intelligence</strong>, with a current focus on Vision-and-Language Navigation (VLN), multimodal reasoning and reliable decision-making in interactive environments.</p>
+              <p class="availability">I’m open to research discussions and collaborations in embodied intelligence and VLN.</p>
+            </div>
+            <div class="lang-zh">
+              <p class="lead">你好，我是<strong>谭圣涵</strong>，现为<a href="https://www.buaa.edu.cn/" target="_blank" rel="noreferrer">北京航空航天大学</a>网络空间安全学院硕士研究生。</p>
+              <p>我于 2025 年在北航完成本科阶段学习，并继续在北航攻读硕士学位。</p>
+              <p>我的研究经历从 <strong>AI Safety</strong> 与<strong>推荐系统</strong>逐步转向<strong>具身智能</strong>，目前主要关注视觉语言导航（VLN）、多模态推理以及交互环境中的可靠决策。</p>
+              <p class="availability">欢迎就具身智能与 VLN 方向的研究和合作与我交流。</p>
+            </div>
+          </div>
+
+          <div class="globe-wrap reveal" aria-label="Interactive research globe">
+            <canvas id="globe-canvas"></canvas>
+            <div class="globe-caption">
+              <span><i></i> BEIJING</span>
+              <span><span class="lang-en">Drag to rotate</span><span class="lang-zh">拖拽旋转</span></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="news-section page-shell" id="news">
+        <div class="section-heading reveal">
+          <h2><span class="lang-en">News</span><span class="lang-zh">动态</span></h2>
+          <p><span class="lang-en">Recent updates</span><span class="lang-zh">近期进展</span></p>
+        </div>
+        <div class="news-list reveal">
+          <article>
+            <time datetime="2026-08">2026.08</time>
+            <p><span class="lang-en">Ranked <strong>3rd out of 117 teams</strong> in the VLNverse ECCV 2026 EMR Challenge.</span><span class="lang-zh">在 VLNverse ECCV 2026 EMR Challenge 的 <strong>117 支队伍中排名第 3</strong>。</span></p>
+          </article>
+          <article>
+            <time datetime="2025-04">2025.04</time>
+            <p><span class="lang-en">Our paper <strong>“Collaborative Evolution: Multi-Round Learning Between Large and Small Language Models for Emergent Fake News Detection”</strong> was published at AAAI 2025.</span><span class="lang-zh">论文<strong>《Collaborative Evolution: Multi-Round Learning Between Large and Small Language Models for Emergent Fake News Detection》</strong>发表于 AAAI 2025。</span></p>
+          </article>
+        </div>
+      </section>
+
+      <section class="education-section page-shell" id="education">
+        <div class="section-heading reveal">
+          <h2><span class="lang-en">Education</span><span class="lang-zh">教育经历</span></h2>
+          <p><span class="lang-en">Beihang University</span><span class="lang-zh">北京航空航天大学</span></p>
+        </div>
+        <div class="timeline-list">
+          <article class="timeline-item reveal">
+            <time>2025 — 2028</time>
+            <div><h3><span class="lang-en">Master’s Student</span><span class="lang-zh">硕士研究生</span></h3><p><span class="lang-en">School of Cyber Science and Technology, Beihang University</span><span class="lang-zh">北京航空航天大学网络空间安全学院</span></p></div>
+          </article>
+          <article class="timeline-item reveal">
+            <time>2021 — 2025</time>
+            <div><h3><span class="lang-en">Undergraduate</span><span class="lang-zh">本科生</span></h3><p><span class="lang-en">School of Cyber Science and Technology, Beihang University</span><span class="lang-zh">北京航空航天大学网络空间安全学院</span></p></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="experience-section page-shell" id="experience">
+        <div class="section-heading reveal">
+          <h2><span class="lang-en">Internship Experience</span><span class="lang-zh">实习经历</span></h2>
+          <p><span class="lang-en">Industry & research</span><span class="lang-zh">产业与研究</span></p>
+        </div>
+        <div class="timeline-list">
+          <article class="timeline-item reveal featured">
+            <time><span class="lang-en">2026.06 — Present</span><span class="lang-zh">2026.06 — 至今</span></time>
+            <div class="experience-copy"><a class="company-logo beta-logo" href="https://www.betainf.com/" target="_blank" rel="noreferrer" title="Official logo source: betainf.com"><img src="./assets/beta-infinity-logo.png" alt="Beta Infinity logo" /></a><div><h3><span class="lang-en">Beta Infinity · Embodied Brain & VLN Research</span><span class="lang-zh">贝塔无限 · 具身大脑与 VLN 研究</span></h3><p><span class="lang-en">Responsible for research on embodied-agent brains and vision-and-language navigation.</span><span class="lang-zh">主要负责具身大脑与视觉语言导航方向的研究。</span></p></div></div>
+          </article>
+          <article class="timeline-item reveal">
+            <time>2025.04 — 2025.09</time>
+            <div class="experience-copy"><a class="company-logo" href="https://www.kuaishou.com/official/material-lib" target="_blank" rel="noreferrer" title="Official logo source: kuaishou.com"><img src="./assets/kuaishou-logo.png" alt="Kuaishou logo" /></a><div><h3><span class="lang-en">Kuaishou · Large Language Model Applications</span><span class="lang-zh">快手 · 大模型应用</span></h3><p><span class="lang-en">Applied SFT and reinforcement learning to train a domain-specific small language model for user-profile analysis.</span><span class="lang-zh">通过 SFT 与强化学习训练垂域小语言模型，实现用户画像分析。</span></p></div></div>
+          </article>
+          <article class="timeline-item reveal">
+            <time>2024.06 — 2024.09</time>
+            <div class="experience-copy"><a class="company-logo" href="https://www.dewu.com/" target="_blank" rel="noreferrer" title="Official logo source: dewu.com"><img src="./assets/dewu-logo.png" alt="Dewu logo" /></a><div><h3><span class="lang-en">Dewu · Search Algorithm Engineer</span><span class="lang-zh">得物 · 搜索算法工程师</span></h3><p><span class="lang-en">Developed quality-scoring and evaluation methods for community feed content.</span><span class="lang-zh">主要负责社区动态内容的质量分评估与相关算法工作。</span></p></div></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="projects-section page-shell" id="projects">
+        <div class="section-heading reveal">
+          <h2><span class="lang-en">Projects</span><span class="lang-zh">项目经历</span></h2>
+          <p><span class="lang-en">Embodied AI & LLM reasoning</span><span class="lang-zh">具身智能与大模型推理</span></p>
+        </div>
+
+        <article class="project-item vln-project reveal">
+          <div class="project-meta"><time>2026.06 — 2026.08</time><span class="project-badge">Rank 3 / 117</span></div>
+          <div class="project-copy">
+            <h3>VLNverse ECCV 2026 EMR Challenge</h3>
+            <div class="project-method vln-method">
+              <div class="method-intro">
+                <span class="method-kicker">Beta-VLN</span>
+                <h4><span class="lang-en">Memory-Centric Dual-System Navigation</span><span class="lang-zh">以记忆为核心的双系统导航</span></h4>
+                <p class="lang-en">Beta-VLN separates semantic planning from safe step-wise execution: a high-level “big brain” understands rooms and plans subgoals, while a low-level “small brain” executes actions. Shared memory coordinates both systems across time.</p>
+                <p class="lang-zh">Beta-VLN 将语义规划与安全的逐步执行解耦：“大脑”理解房间并规划子目标，“小脑”负责动作执行，共享记忆则在时间维度上协调两个系统。</p>
+              </div>
+              <dl class="memory-list">
+                <div><dt><span class="lang-en">Task Memory</span><span class="lang-zh">任务记忆</span></dt><dd><span class="lang-en">Preserves targets, attributes, regions, and spatial relations.</span><span class="lang-zh">保存目标、属性、区域与空间关系。</span></dd></div>
+                <div><dt><span class="lang-en">Observation Memory</span><span class="lang-zh">观测记忆</span></dt><dd><span class="lang-en">Tracks rooms, routes, exits, rejected doors, and search coverage.</span><span class="lang-zh">维护房间、路径、出口、被否决门口与搜索覆盖。</span></dd></div>
+                <div><dt><span class="lang-en">Visual Decision Memory</span><span class="lang-zh">视觉决策记忆</span></dt><dd><span class="lang-en">Detects repeated views, insufficient progress, and redundant decisions.</span><span class="lang-zh">识别重复视点、进展不足与冗余决策。</span></dd></div>
+                <div><dt><span class="lang-en">Action & Recovery</span><span class="lang-zh">动作与恢复记忆</span></dt><dd><span class="lang-en">Records actions, stalls, and deadlocks for recovery and replanning.</span><span class="lang-zh">记录动作、停滞与死锁，支持恢复和重规划。</span></dd></div>
+              </dl>
+            </div>
+          </div>
+          <figure class="framework-figure">
+            <a class="figure-link" href="./assets/beta-vln-framework.png" target="_blank" rel="noreferrer">
+              <img src="./assets/beta-vln-framework.png" alt="Beta-VLN memory-centric dual-system navigation framework" loading="lazy" />
+            </a>
+            <figcaption>
+              <span><span class="lang-en">Beta-VLN system framework</span><span class="lang-zh">Beta-VLN 系统框架</span></span>
+              <a href="./assets/beta-vln-framework.png" target="_blank" rel="noreferrer"><span class="lang-en">Open full size ↗</span><span class="lang-zh">查看大图 ↗</span></a>
+            </figcaption>
+          </figure>
+        </article>
+
+        <article class="project-item ongoing reveal">
+          <div class="project-meta"><time>2026.08 — 2027.06</time><span class="project-badge"><span class="lang-en">In Progress</span><span class="lang-zh">正在进行</span></span></div>
+          <div class="project-copy">
+            <h3><span class="lang-en">Ant Group · Auditable Reasoning for LLM Agents</span><span class="lang-zh">蚂蚁集团 · 面向 LLM Agent 的推理链完整性核验与可审计推理</span></h3>
+            <p><span class="lang-en">Will lead the development of a framework for verifying the integrity, evidential grounding, and cross-step consistency of visible LLM Agent reasoning.</span><span class="lang-zh">将主导面向 LLM Agent 可见推理过程的完整性、证据支撑与跨步骤一致性核验研究。</span></p>
+          </div>
+          <div class="project-method ant-method">
+            <div class="method-intro">
+              <span class="method-kicker"><span class="lang-en">Research Objective</span><span class="lang-zh">研究目标</span></span>
+              <h4><span class="lang-en">From Plausible Answers to Traceable Reasoning</span><span class="lang-zh">从“答案合理”走向“推理可回溯”</span></h4>
+              <p class="lang-en">The project reconstructs auditable reasoning objects from complete Agent sessions—including actions, claims, evidence, decisions, entities, and relations—and aligns them with the visible think / reasoning chain. The goal is to identify missing steps, unsupported premises, premise drift, broken evidence chains, and unresolved uncertainty while preserving links to the original session.</p>
+              <p class="lang-zh">项目将从完整 Agent Session 中重建行为、断言、证据、决策、实体与关系等可审计对象，并与可见的 think / reasoning 推理链对齐，在保留原始 Session 回指关系的同时，识别步骤跳跃、关键前提未验证、前提漂移、证据链断裂与未标注的不确定性。</p>
+            </div>
+            <ol class="audit-pipeline" aria-label="LLM Agent reasoning audit pipeline">
+              <li>
+                <span>01</span>
+                <div><strong><span class="lang-en">Parse</span><span class="lang-zh">解析</span></strong><small><span class="lang-en">Build actions, claims, evidence, decisions, entities, relations, and a Session Tree.</span><span class="lang-zh">构建行为、断言、证据、决策、实体、关系与 Session Tree。</span></small></div>
+              </li>
+              <li>
+                <span>02</span>
+                <div><strong><span class="lang-en">Align</span><span class="lang-zh">对齐</span></strong><small><span class="lang-en">Map reasoning steps and premises back to traceable session objects.</span><span class="lang-zh">将推理步骤与前提映射到可回指的 Session 对象。</span></small></div>
+              </li>
+              <li>
+                <span>03</span>
+                <div><strong><span class="lang-en">Verify</span><span class="lang-zh">核验</span></strong><small><span class="lang-en">Detect reasoning gaps and cross-step premise or state conflicts.</span><span class="lang-zh">检测推理缺口以及跨步骤前提与状态冲突。</span></small></div>
+              </li>
+              <li>
+                <span>04</span>
+                <div><strong><span class="lang-en">Audit</span><span class="lang-zh">审计</span></strong><small><span class="lang-en">Generate structured reports with evidence references and repair guidance.</span><span class="lang-zh">生成带证据回指与修复建议的结构化审计报告。</span></small></div>
+              </li>
+            </ol>
+            <dl class="project-scope">
+              <div><dt><span class="lang-en">Gap Taxonomy</span><span class="lang-zh">缺口分类</span></dt><dd><span class="lang-en">Step jumps, hidden assumptions, premise drift, overgeneralization, broken evidence chains, and boundary omissions.</span><span class="lang-zh">覆盖步骤跳跃、隐性假设、前提漂移、过度归纳、证据链断裂与边界条件缺失等问题。</span></dd></div>
+              <div><dt><span class="lang-en">Domain Templates</span><span class="lang-zh">领域模板</span></dt><dd><span class="lang-en">Extensible reasoning templates for finance, healthcare, and security tasks.</span><span class="lang-zh">构建面向金融、医疗与安全任务的可扩展推理模板。</span></dd></div>
+              <div><dt><span class="lang-en">Core Deliverables</span><span class="lang-zh">核心产物</span></dt><dd><span class="lang-en">A reasoning verifier, cross-step consistency prototype, template library, annotated cases, and audit-report generator.</span><span class="lang-zh">形成推理链核验器、跨步骤一致性原型、模板库、标注案例与审计报告生成器。</span></dd></div>
+            </dl>
+          </div>
+        </article>
+      </section>
+
+      <section class="publications-section page-shell" id="publications">
+        <div class="section-heading reveal">
+          <h2><span class="lang-en">Publications</span><span class="lang-zh">代表性论文</span></h2>
+          <p><span class="lang-en">1 publication</span><span class="lang-zh">1 篇论文</span></p>
+        </div>
+        <article class="publication reveal">
+          <a class="paper-visual paper-image" href="./assets/aaai-framework.png" target="_blank" rel="noreferrer" aria-label="Open the AAAI paper framework figure">
+            <img src="./assets/aaai-framework.png" alt="AAAI paper multi-round collaboration framework" loading="lazy" />
+          </a>
+          <div class="paper-copy">
+            <div class="venue">AAAI 2025</div>
+            <h3>Collaborative Evolution: Multi-Round Learning Between Large and Small Language Models for Emergent Fake News Detection</h3>
+            <p class="authors">Ziyi Zhou, Xiaoming Zhang, <strong>Shenghan Tan</strong>, Litian Zhang, Chaozhuo Li</p>
+            <p class="paper-note"><span class="lang-en">A multi-round collaboration framework combining the generalization ability of LLMs with the specialized functionality of SLMs for emerging news events.</span><span class="lang-zh">提出多轮协同检测框架，结合大模型的泛化能力与小模型的专业能力，应对突发新闻事件检测。</span></p>
+            <div class="paper-links"><a href="https://ojs.aaai.org/index.php/AAAI/article/view/32109" target="_blank" rel="noreferrer">AAAI ↗</a><a href="https://arxiv.org/abs/2503.21127" target="_blank" rel="noreferrer">arXiv ↗</a><a href="https://doi.org/10.1609/aaai.v39i1.32109" target="_blank" rel="noreferrer">DOI ↗</a><a href="https://scholar.google.com/citations?view_op=view_citation&hl=en&user=uX6HkUwAAAAJ&citation_for_view=uX6HkUwAAAAJ:u5HHmVD_uO8C" target="_blank" rel="noreferrer">Scholar ↗</a><a href="./assets/aaai-framework.png" target="_blank" rel="noreferrer"><span class="lang-en">Framework ↗</span><span class="lang-zh">框架图 ↗</span></a></div>
+          </div>
+        </article>
+      </section>
+
+      <section class="research-section page-shell" id="research">
+        <div class="section-heading reveal"><h2><span class="lang-en">Research Journey</span><span class="lang-zh">研究方向</span></h2><p><span class="lang-en">Past → Present</span><span class="lang-zh">过去 → 现在</span></p></div>
+        <div class="interest-list journey-list">
+          <article class="reveal"><span><span class="lang-en">01 · PAST</span><span class="lang-zh">01 · 过去</span></span><h3><span class="lang-en">AI Safety</span><span class="lang-zh">人工智能安全</span></h3><p><span class="lang-en">Reliable and trustworthy learning systems.</span><span class="lang-zh">可靠、可信的人工智能系统。</span></p></article>
+          <article class="reveal"><span><span class="lang-en">02 · PAST</span><span class="lang-zh">02 · 过去</span></span><h3><span class="lang-en">Recommender Systems</span><span class="lang-zh">推荐系统</span></h3><p><span class="lang-en">Search, recommendation and user-facing intelligence.</span><span class="lang-zh">搜索、推荐与面向用户的智能系统。</span></p></article>
+          <article class="reveal current-interest"><span><span class="lang-en">03 · NOW</span><span class="lang-zh">03 · 现在</span></span><h3><span class="lang-en">Embodied Intelligence & VLN</span><span class="lang-zh">具身智能与 VLN</span></h3><p><span class="lang-en">Multimodal reasoning, spatial understanding and navigation.</span><span class="lang-zh">多模态推理、空间理解与视觉语言导航。</span></p></article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer"><div class="page-shell"><span>© <span id="year"></span> <span class="lang-en">Shenghan Tan</span><span class="lang-zh">谭圣涵</span></span><span><a href="mailto:tanshenghan@buaa.edu.cn">tanshenghan@buaa.edu.cn</a></span><a href="#home"><span class="lang-en">Back to top ↑</span><span class="lang-zh">返回顶部 ↑</span></a></div></footer>
+    <noscript>This page’s interactive globe and language switch require JavaScript.</noscript>
+    <script src="./script.js"></script>
+  </body>
+</html>
