@@ -11,10 +11,11 @@
 - 基于 Natural Earth 1:110m 数据的国家边界覆盖
 - 北航本科与硕士教育经历
 - 得物、快手、贝塔无限实习经历
-- VLNVerse ECCV Challenge 项目与框架图占位
+- VLNverse ECCV 2026 EMR Challenge 项目与框架图
 - 蚂蚁集团 LLM 推理链检验项目
 - AAAI 2025 论文
 - AI Safety → 推荐系统 → 具身智能与 VLN 的研究路径
+- 独立 BLOG 栏目、技术系列目录与数学公式文章；编辑说明见 `site-tools/README.md`
 
 ## 图片资源
 
@@ -44,13 +45,13 @@
 
 ## 本地预览
 
-在仓库根目录运行：
+在独立 GitHub Pages 仓库根目录运行：
 
 ```bash
 python3 -m http.server 4173
 ```
 
-访问 `http://localhost:4173/docs/`。
+访问 `http://localhost:4173/`。在 VLN4BUAA 本地工作区中则增加 `--directory docs` 参数。
 
 ## GitHub Pages
 
@@ -58,6 +59,6 @@ python3 -m http.server 4173
 
 - Source: `Deploy from a branch`
 - Branch: `main`
-- Folder: `/docs`
+- Folder: `/ (root)`
 
 如果希望地址为 `tanshenghan.github.io`，仓库名必须是 `tanshenghan.github.io`。

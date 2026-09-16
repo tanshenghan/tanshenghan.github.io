@@ -1,0 +1,15 @@
+[
+  {
+    "title": "Flow-从随机变量到确定性 Markov 过程",
+    "slug": "flow-random-variables-deterministic-markov",
+    "series": "Flow matching之旅",
+    "seriesSlug": "flow-matching",
+    "number": "01",
+    "date": "2026-09-16",
+    "description": "从一个随机变量出发，理解空间映射如何运输概率分布，以及 ODE flow 为什么是确定性的 Markov 过程。最后，把这些概念放回 VLA 的动作生成中。",
+    "subtitle": "一条连接粒子轨迹、概率分布与条件动作生成的概念路径。",
+    "tags": ["Flow", "概率运输", "ODE", "VLA"],
+    "source": "flow-foundations.md",
+    "minutes": 16
+  }
+]
