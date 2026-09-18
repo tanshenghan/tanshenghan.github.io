@@ -288,3 +288,22 @@ button, a, summary, input { -webkit-tap-highlight-color: transparent; }
   .equation, .table-scroll { overflow: visible; }
   .prose h2, .prose h3 { break-after: avoid; }
 }
+.gaussian-demo #density-demo { cursor: ew-resize; touch-action: pan-y; user-select: none; }
+.gaussian-demo #density-demo.is-dragging { cursor: grabbing; }
+.gaussian-demo .density-area { stroke: none; fill-opacity: .12; }
+.gaussian-demo .density-original { stroke-width: 1.5; }
+.gaussian-demo #density-curve { fill: none; stroke: var(--blue); stroke-width: 2.25; }
+.gaussian-demo #flow-peak { fill: var(--surface); stroke: var(--blue); stroke-width: 2; }
+.gaussian-demo .demo-grid, .gaussian-demo .demo-axis,
+.gaussian-demo .density-original, .gaussian-demo #density-curve { vector-effect: non-scaling-stroke; }
+.gaussian-legend { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 20px; margin-top: 16px; font-size: 11px; color: var(--muted); }
+.gaussian-legend span { display: inline-flex; align-items: center; gap: 7px; }
+.gaussian-legend i { display: inline-block; width: 22px; border-top: 2px solid var(--blue); }
+.gaussian-legend i.initial { border-top: 2px dashed var(--muted); }
+.gaussian-legend .drag-hint { margin-left: auto; color: var(--blue); }
+.gaussian-demo button:disabled, .gaussian-demo input:disabled { opacity: .55; cursor: default; }
+@media (max-width: 500px) {
+  .gaussian-legend { font-size: 10px; gap: 8px 14px; }
+  .gaussian-legend .drag-hint { display: none; }
+  .gaussian-demo .demo-labels { font-size: 18px; }
+}

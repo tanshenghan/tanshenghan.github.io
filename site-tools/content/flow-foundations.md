@@ -8,20 +8,20 @@ Flow 是由时间依赖速度场生成的一族平滑、可逆的空间变换。
 
 如果随机变量 $X_0$ 服从初始分布 $p_0$，那么经过 Flow 后：
 
-$$X_t=\psi_t(X_0),\qquad p_t=(\psi_t)_p_0.$$
+$$X_t=\psi_t(X_0),\qquad p_t=(\psi_t)_\#p_0$$
 
 所以 Flow 可以同时从两个角度理解：
 
 - **粒子角度**：每一个点 $x_0$ 被移动到 $\psi_t(x_0)$。
 - **分布角度**：整个概率分布 $p_0$ 被连续运输成 $p_t$。
 
-这里统一用 $(\psi_t)_p_0$ 表示原稿中的 $\psi_t(p_0)$，强调它是对分布的推送，而不是把密度数值直接代入空间映射。
+这里统一用 $(\psi_t)_\#p_0$ 表示原稿中的 $\psi_t(p_0)$，强调它是对分布的推送，而不是把密度数值直接代入空间映射。
 
 ### 随机变量与概率分布
 
 设一个随机变量 $X\in\mathbb R^d$，它服从某个概率分布 $X\sim p_X$。在存在密度的情况下，真正有意义的是某个区域 $A$ 中的概率：
 
-$$\mathbb P(X\in A)=\int_A p_X(x)dx.$$
+$$\mathbb P(X\in A)=\int_A p_X(x)dx$$
 
 概率密度 $p_X(x)$ 可以理解为：**在位置 $x$ 附近，概率质量有多密集。** Flow 会不断移动空间中的点，而空间的拉伸与压缩会导致概率密度发生变化。
 
@@ -29,13 +29,13 @@ $$\mathbb P(X\in A)=\int_A p_X(x)dx.$$
 
 考虑一个普通映射：
 
-$$Y=\psi(X),\qquad \psi:\mathbb R^d\to\mathbb R^d.$$
+$$Y=\psi(X),\qquad \psi:\mathbb R^d\to\mathbb R^d$$
 
 把原空间中的一个点 $x$ 映射到另一个位置 $\psi(x)$。例如一维情况 $\psi(x)=2x$，就有 $1\to2$、$2\to4$、$3\to6$。
 
 如果 $X$ 是随机变量，那么 $Y=\psi(X)$ 也是随机变量。一个点的变换，同时也会诱导出整个概率分布的变换。若 $X\sim p_X$，新分布记作：
 
-$$p_Y=\psi_p_X.$$
+$$p_Y=\psi_\#p_X$$
 
 直观地说，从 $p_X$ 中采样大量点，把每个点通过 $\psi$ 移动到新位置，移动后的所有点共同形成的新分布，就是 $p_Y$。
 
@@ -49,11 +49,13 @@ PUSH-FORWARD
 
 **空间被拉伸，概率密度下降；空间被压缩，概率密度上升。**
 
+同样的拉伸也可以作用于高斯分布。下图取 $X_0\sim\mathcal N(0,1)$，观察 $X_t=(1+t)X_0$ 的密度如何变化。
 
+<!-- flow-demo -->
 
 在高维空间中，映射 $y=\psi(x)$ 会改变局部体积。这个局部体积变化由 Jacobian determinant 描述：
 
-$$\left|\det D\psi(x)\right|=\left|\det\frac{\partial\psi}{\partial x}\right|.$$
+$$\left|\det D\psi(x)\right|=\left|\det\frac{\partial\psi}{\partial x}\right|$$
 
 例如 $|\det D\psi(x)|=3$，表示当前位置附近的一个微小体积被放大了 3 倍。为保持概率质量不变，密度缩小到原来的 $1/3$。
 
@@ -61,7 +63,7 @@ $$\left|\det D\psi(x)\right|=\left|\det\frac{\partial\psi}{\partial x}\right|.$$
 
 $$p_Y(y)=p_X\left(\psi^{-1}(y)\right)\left|\det D\psi^{-1}(y)\right|,$$
 
-$$p_Y\left(\psi(x)\right)=\frac{p_X(x)}{|\det D\psi(x)|}.$$
+$$p_Y\left(\psi(x)\right)=\frac{p_X(x)}{|\det D\psi(x)|}$$
 
 这就是 **change-of-variables formula**，变量替换公式。
 
@@ -69,7 +71,7 @@ $$p_Y\left(\psi(x)\right)=\frac{p_X(x)}{|\det D\psi(x)|}.$$
 
 Flow 不是一个单独的映射，而是一整族随时间变化的映射：
 
-$$\psi_t:\mathbb R^d\to\mathbb R^d,\qquad t\in[0,1],\qquad \psi_0(x)=x.$$
+$$\psi_t:\mathbb R^d\to\mathbb R^d,\qquad t\in[0,1],\qquad \psi_0(x)=x$$
 
 在初始时刻，所有点还停留在原位置。随着时间变化，$\psi_0,\psi_{0.1},\psi_{0.2},\ldots,\psi_1$ 描述空间如何连续变形。
 
@@ -79,29 +81,29 @@ $$\psi_t:\mathbb R^d\to\mathbb R^d,\qquad t\in[0,1],\qquad \psi_0(x)=x.$$
 
 考虑一维 Flow：
 
-$$\psi_t(x_0)=s_tx_0+m_t.$$
+$$\psi_t(x_0)=s_tx_0+m_t$$
 
 其中 $s_t>0$，$s_t,m_t$ 连续可微，并满足 $s_0=1,m_0=0$。它的逆映射是：
 
-$$\psi_t^{-1}(x)=\frac{x-m_t}{s_t}.$$
+$$\psi_t^{-1}(x)=\frac{x-m_t}{s_t}$$
 
 $m_t$ 决定整体平移，$s_t$ 决定空间被放大或缩小多少倍。例如令 $s_t=1+t,m_t=2t$，则：
 
-$$\psi_t(x_0)=(1+t)x_0+2t.$$
+$$\psi_t(x_0)=(1+t)x_0+2t$$
 
 对于初始位置 $x_0=1$，轨迹为 $x_t=1+3t$，最终到达 $x_1=4$。
 
 如果初始随机变量服从标准高斯 $X_0\sim\mathcal N(0,1)$，则整个分布变成：
 
-$$X_t\sim\mathcal N(m_t,s_t^2).$$
+$$X_t\sim\mathcal N(m_t,s_t^2)$$
 
 在上述具体例子中：
 
-$$X_t\sim\mathcal N\left(2t,(1+t)^2\right).$$
+$$X_t\sim\mathcal N\left(2t,(1+t)^2\right)$$
 
 这里还没有引入速度场，我们已经能够定义 Flow、样本轨迹和概率分布的变化。下面的图先看位置和密度；图中的速度关系将在下一节推出。
 
-
+<!-- affine-demo -->
 
 ### Flow 为什么是 Markov 的
 
@@ -109,15 +111,15 @@ Markov 性表达的是：**给定当前状态以后，未来不再需要更早�
 
 设 $X_t=\psi_t(X_0)$。现在已经知道 $X_t$，因为 $\psi_t$ 可逆：
 
-$$X_0=\psi_t^{-1}(X_t).$$
+$$X_0=\psi_t^{-1}(X_t)$$
 
 对于未来时刻 $s>t$，代入 $X_s=\psi_s(X_0)$：
 
-$$X_s=\psi_s\left(\psi_t^{-1}(X_t)\right).$$
+$$X_s=\psi_s\left(\psi_t^{-1}(X_t)\right)$$
 
 定义 $\Phi_{t,s}=\psi_s\circ\psi_t^{-1}$，那么：
 
-$$X_s=\Phi_{t,s}(X_t).$$
+$$X_s=\Phi_{t,s}(X_t)$$
 
 当前状态 $X_t$ 已经包含决定未来所需的全部信息，因此它满足 Markov 性。
 
@@ -142,7 +144,10 @@ $$u_t(x)=\bigl(\partial_t\psi_t\bigr)\left(\psi_t^{-1}(x)\right)$$
 
 $$\begin{aligned}
 u_t(x_t)
-&=\bigl(\partial_t\psi_t\bigr)\left(\psi_t^{-1}(x_t)\right) &=\partial_t\psi_t(x_0) &=\dot x_t \end{aligned}$$
+&=\bigl(\partial_t\psi_t\bigr)\left(\psi_t^{-1}(x_t)\right)\\
+&=\partial_t\psi_t(x_0)\\
+&=\dot x_t
+\end{aligned}$$
 
 于是得到：
 
@@ -169,21 +174,21 @@ $$\frac{dx_t}{dt}=u_t(x_t)$$
 
 对于 $\psi_t(x_0)=s_tx_0+m_t$，有：
 
-$$\partial_t\psi_t(x_0)=\dot s_tx_0+\dot m_t.$$
+$$\partial_t\psi_t(x_0)=\dot s_tx_0+\dot m_t$$
 
 用 $x_0=(x-m_t)/s_t$ 消去初始位置，得到：
 
-$$u_t(x)=\frac{\dot s_t}{s_t}(x-m_t)+\dot m_t.$$
+$$u_t(x)=\frac{\dot s_t}{s_t}(x-m_t)+\dot m_t$$
 
 其中 $\frac{\dot s_t}{s_t}(x-m_t)$ 负责围绕当前中心 $m_t$ 的膨胀或压缩，$\dot m_t$ 负责整体平移。
 
 当 $s_t=1+t,m_t=2t$ 时：
 
-$$u_t(x)=\frac{x-2t}{1+t}+2=\frac{x+2}{1+t}.$$
+$$u_t(x)=\frac{x-2t}{1+t}+2=\frac{x+2}{1+t}$$
 
 沿着前面 $x_0=1$ 对应的轨迹 $x_t=1+3t$ 计算速度：
 
-$$u_t(x_t)=\frac{1+3t+2}{1+t}=3=\frac{dx_t}{dt}.$$
+$$u_t(x_t)=\frac{1+3t+2}{1+t}=3=\frac{dx_t}{dt}$$
 
 **速度场不是总位移 $\psi_t(x_0)-x_0$。** 位移描述已经走了多远，速度描述此刻怎样继续运动。
 
@@ -191,11 +196,11 @@ $$u_t(x_t)=\frac{1+3t+2}{1+t}=3=\frac{dx_t}{dt}.$$
 
 如果先给定速度场，而没有显式给出 Flow，可以对每个初始位置求解：
 
-$$\frac{dx_t}{dt}=u_t(x_t),\qquad x_{t=0}=x_0.$$
+$$\frac{dx_t}{dt}=u_t(x_t),\qquad x_{t=0}=x_0$$
 
 等价地：
 
-$$x_t=x_0+\int_0^t u_s(x_s)ds.$$
+$$x_t=x_0+\int_0^t u_s(x_s)ds$$
 
 如果这个初值问题对每个起点都有唯一解，就可以定义 $\psi_t(x_0):=x_t$。
 
@@ -223,7 +228,7 @@ $$x_t=x_0+\int_0^t u_s(x_s)ds.$$
 假设两个不同起点 $x_0^{(1)}\ne x_0^{(2)}$ 在同一时刻 $t$ 到达相同位置。此时从该位置反向积分，会得到两个不同的过去，与唯一性矛盾。因此：
 
 $$x_0^{(1)}\ne x_0^{(2)}\quad\Longrightarrow\quad
-\psi_t(x_0^{(1)})\ne\psi_t(x_0^{(2)}).$$
+\psi_t(x_0^{(1)})\ne\psi_t(x_0^{(2)})$$
 
 在这些条件下，$\psi_t$ 可逆；若速度场足够光滑，则 $\psi_t$ 和 $\psi_t^{-1}$ 也光滑。
 
@@ -233,7 +238,7 @@ $$x_0^{(1)}\ne x_0^{(2)}\quad\Longrightarrow\quad
 
 ## 06 · 连续性方程：速度怎样连接概率分布
 
-给定初始分布 $X_0\sim p_0$ 与良好的 Flow $X_t=\psi_t(X_0)$，自然会产生 $p_t=(\psi_t)_p_0$。但这个 $p_t$ 不一定是我们想要的。
+给定初始分布 $X_0\sim p_0$ 与良好的 Flow $X_t=\psi_t(X_0)$，自然会产生 $p_t=(\psi_t)_\#p_0$。但这个 $p_t$ 不一定是我们想要的。
 
 用 $p_t$ 表示当前速度场实际产生的分布，用 $\rho_t$ 表示希望实现的概率路径。问题是：**什么条件下，$p_t=\rho_t$？**
 
@@ -245,39 +250,39 @@ $$x_0^{(1)}\ne x_0^{(2)}\quad\Longrightarrow\quad
 
 除以时间，得到有符号的概率流量：
 
-$$j_t(x)=p_t(x)u_t(x).$$
+$$j_t(x)=p_t(x)u_t(x)$$
 
 密度决定这里有多少概率质量，速度决定这些质量移动得多快；负流量表示向左流动。
 
 现在观察固定区间 $[a,b]$。概率不会凭空产生或消失，所以：
 
-$$\frac{d}{dt}\int_a^b p_t(x)dx=j_t(a)-j_t(b).$$
+$$\frac{d}{dt}\int_a^b p_t(x)dx=j_t(a)-j_t(b)$$
 
 右边是左端流入减去右端流出。根据微积分基本定理：
 
-$$j_t(a)-j_t(b)=-\int_a^b\partial_xj_t(x)dx.$$
+$$j_t(a)-j_t(b)=-\int_a^b\partial_xj_t(x)dx$$
 
 在足够光滑的条件下：
 
-$$\int_a^b\left[\partial_tp_t(x)+\partial_xj_t(x)\right]dx=0.$$
+$$\int_a^b\left[\partial_tp_t(x)+\partial_xj_t(x)\right]dx=0$$
 
 因为这对任意区间都成立：
 
-$$\boxed{\partial_tp_t(x)+\partial_x\bigl(p_t(x)u_t(x)\bigr)=0.}$$
+$$\boxed{\partial_tp_t(x)+\partial_x\bigl(p_t(x)u_t(x)\bigr)=0}$$
 
 这就是一维连续性方程。下图沿用平移与缩放的高斯例子，额外选定固定区间 $[0,2]$，直接比较它两端的流量。
 
-
+<!-- continuity-demo -->
 
 ### 高维连续性方程与散度
 
 高维中，概率可以沿多个方向流动。概率流量是向量 $j_t(x)=p_t(x)u_t(x)$，其散度为：
 
-$$\nabla\cdot j_t=\sum_{k=1}^d\frac{\partial j_{t,k}}{\partial x_k}.$$
+$$\nabla\cdot j_t=\sum_{k=1}^d\frac{\partial j_{t,k}}{\partial x_k}$$
 
 散度表示一个微小区域单位体积的净向外流量。因此：
 
-$$\boxed{\partial_tp_t+\nabla\cdot(p_tu_t)=0.}$$
+$$\boxed{\partial_tp_t+\nabla\cdot(p_tu_t)=0}$$
 
 对任意固定区域 $A$，也可以写成：
 
@@ -292,7 +297,7 @@ $$\frac{d}{dt}\int_A p_t(x)dx
 
 模型实际产生的密度满足：
 
-$$\partial_tp_t+\nabla\cdot(p_tu_t)=0,\qquad p_{t=0}=p_0.$$
+$$\partial_tp_t+\nabla\cdot(p_tu_t)=0,\qquad p_{t=0}=p_0$$
 
 如果指定的目标路径也满足：
 
@@ -312,18 +317,18 @@ $$\partial_t\rho_t+\nabla\cdot(\rho_tu_t)=0,\qquad \rho_0=p_0,$$
 
 考虑速度场 $u_t(x)=\frac{\dot s_t}{s_t}(x-m_t)+\dot m_t$，希望它生成：
 
-$$\rho_t(x)=\frac{1}{s_t\sqrt{2\pi}}\exp\left[-\frac{(x-m_t)^2}{2s_t^2}\right].$$
+$$\rho_t(x)=\frac{1}{s_t\sqrt{2\pi}}\exp\left[-\frac{(x-m_t)^2}{2s_t^2}\right]$$
 
 空间对数密度导数为：
 
-$$\partial_x\log\rho_t=-\frac{x-m_t}{s_t^2}.$$
+$$\partial_x\log\rho_t=-\frac{x-m_t}{s_t^2}$$
 
 固定位置处的时间导数为：
 
 $$\partial_t\log\rho_t
 =-\frac{\dot s_t}{s_t}
 +\frac{(x-m_t)\dot m_t}{s_t^2}
-+\frac{(x-m_t)^2\dot s_t}{s_t^3}.$$
++\frac{(x-m_t)^2\dot s_t}{s_t^3}$$
 
 速度场的空间导数为 $\partial_xu_t=\dot s_t/s_t$。将它们代入：
 
@@ -337,17 +342,17 @@ $$\partial_t\log\rho_t+u_t\partial_x\log\rho_t+\partial_xu_t=0,$$
 
 根据变量替换公式：
 
-$$p_t\left(\psi_t(x_0)\right)=\frac{p_0(x_0)}{|\det D\psi_t(x_0)|}.$$
+$$p_t\left(\psi_t(x_0)\right)=\frac{p_0(x_0)}{|\det D\psi_t(x_0)|}$$
 
 Jacobian 可以随空间位置复杂地变化。某些区域被压缩，形成高密度峰；另一些区域被拉伸，形成低密度区。**形成多个密度峰，不要求把两个不同起点合并。**
 
 一维中可以直接构造。设 $F_0$ 是标准高斯的分布函数，$F_1$ 是一个光滑、处处正密度的双峰高斯混合分布的分布函数，令：
 
-$$T(x)=F_1^{-1}\left(F_0(x)\right).$$
+$$T(x)=F_1^{-1}\left(F_0(x)\right)$$
 
 则 $T$ 可以把标准高斯变成目标双峰分布，并且：
 
-$$T'(x)=\frac{p_0(x)}{p_1(T(x))}>0.$$
+$$T'(x)=\frac{p_0(x)}{p_1(T(x))}>0$$
 
 所以它仍然单调、一一可逆。真正受到限制的是精确退化和支持集。
 
@@ -369,7 +374,7 @@ $$T'(x)=\frac{p_0(x)}{p_1(T(x))}>0.$$
 
 网络输入时间 $t$ 和当前位置 $x$，输出与 $x$ 同维度的速度：
 
-$$u^\theta:[0,1]\times\mathbb R^d\longrightarrow\mathbb R^d.$$
+$$u^\theta:[0,1]\times\mathbb R^d\longrightarrow\mathbb R^d$$
 
 固定一个容易采样、容易计算密度的初始分布 $X_0\sim p_0=\mathcal N(0,I)$，求解：
 
@@ -377,7 +382,7 @@ $$\frac{dX_t}{dt}=u_t^\theta(X_t),$$
 
 便得到：
 
-$$X_t=\psi_t^\theta(X_0),\qquad p_t^\theta=(\psi_t^\theta)_p_0.$$
+$$X_t=\psi_t^\theta(X_0),\qquad p_t^\theta=(\psi_t^\theta)_\#p_0$$
 
 这种模型叫作 **Continuous Normalizing Flow（CNF）**：用连续的、可逆的变换，把简单分布变成复杂分布。具体实现是一个预测速度的神经网络，加上一个 ODE 求解器。
 
@@ -387,7 +392,7 @@ $$X_t=\psi_t^\theta(X_0),\qquad p_t^\theta=(\psi_t^\theta)_p_0.$$
 
 通常需要训练的是速度网络的参数 $\theta$：
 
-$$\theta\longrightarrow u_t^\theta\longrightarrow\psi_t^\theta\longrightarrow p_1^\theta.$$
+$$\theta\longrightarrow u_t^\theta\longrightarrow\psi_t^\theta\longrightarrow p_1^\theta$$
 
 改变参数，就会改变速度场；速度场改变，轨迹随之改变；所有轨迹的变化，又会改变终点分布。
 
@@ -403,11 +408,11 @@ $$\theta\longrightarrow u_t^\theta\longrightarrow\psi_t^\theta\longrightarrow p_
 
 连续性方程为 $\partial_tp_t=-\nabla\cdot(p_tu_t)$。展开乘积：
 
-$$\partial_tp_t=-u_t^\top\nabla p_t-p_t\nabla\cdot u_t.$$
+$$\partial_tp_t=-u_t^\top\nabla p_t-p_t\nabla\cdot u_t$$
 
 在 $p_t>0$ 的位置，两边除以 $p_t$：
 
-$$\partial_t\log p_t=-u_t^\top\nabla\log p_t-\nabla\cdot u_t.$$
+$$\partial_t\log p_t=-u_t^\top\nabla\log p_t-\nabla\cdot u_t$$
 
 这描述**固定空间位置**处对数密度随时间的变化。
 
@@ -415,49 +420,49 @@ $$\partial_t\log p_t=-u_t^\top\nabla\log p_t-\nabla\cdot u_t.$$
 
 $$\frac{d}{dt}\log p_t(X_t)
 =\partial_t\log p_t(X_t)
-+\nabla\log p_t(X_t)^\top\frac{dX_t}{dt}.$$
++\nabla\log p_t(X_t)^\top\frac{dX_t}{dt}$$
 
 代入 ODE 运动方程 $dX_t/dt=u_t(X_t)$，空间对流项恰好抵消：
 
-$$\boxed{\frac{d}{dt}\log p_t(X_t)=-\nabla\cdot u_t(X_t).}$$
+$$\boxed{\frac{d}{dt}\log p_t(X_t)=-\nabla\cdot u_t(X_t)}$$
 
 这就是 **Instantaneous Change of Variables，瞬时变量替换公式**：沿着样本轨迹观测时，对数密度的时间变化率，等于速度场局部散度的负值，也就是局部对数体积膨胀率的相反数。
 
 对时间从 0 到 1 积分，得到 CNF 的对数似然：
 
 $$\log p_1^\theta(X_1)=\log p_0(X_0)
--\int_0^1\nabla\cdot u_t^\theta(X_t)dt.$$
+-\int_0^1\nabla\cdot u_t^\theta(X_t)dt$$
 
 ### 瞬时公式与 Jacobian 的关系
 
 令 $J_t=D\psi_t(x_0)$。在足够光滑的条件下，对 Flow 的 ODE 再关于初始位置求导：
 
-$$\frac{dJ_t}{dt}=Du_t(X_t)J_t,\qquad J_0=I.$$
+$$\frac{dJ_t}{dt}=Du_t(X_t)J_t,\qquad J_0=I$$
 
 由行列式的微分公式：
 
 $$\begin{aligned}
 \frac{d}{dt}\log|\det J_t|
-&=\operatorname{tr}\left(J_t^{-1}\frac{dJ_t}{dt}\right)
-&=\operatorname{tr}\bigl(Du_t(X_t)\bigr)
-&=\nabla\cdot u_t(X_t).
+&=\operatorname{tr}\left(J_t^{-1}\frac{dJ_t}{dt}\right)\\
+&=\operatorname{tr}\bigl(Du_t(X_t)\bigr)\\
+&=\nabla\cdot u_t(X_t)
 \end{aligned}$$
 
 另一方面，概率守恒要求：
 
-$$p_t(X_t)|\det J_t|=p_0(x_0).$$
+$$p_t(X_t)|\det J_t|=p_0(x_0)$$
 
 所以：
 
 $$\frac{d}{dt}\log p_t(X_t)
 =-\frac{d}{dt}\log|\det J_t|
-=-\nabla\cdot u_t(X_t).$$
+=-\nabla\cdot u_t(X_t)$$
 
 普通变量替换中的 Jacobian 行列式，与瞬时变量替换中的散度，描述的是同一个体积变化：**前者描述累计变化，后者描述每一瞬间的变化率。**
 
 在平移与缩放的例子中，$J_t=s_t$、$\partial_xu_t=\dot s_t/s_t$，因此：
 
-$$\log p_t(X_t)=\log p_0(X_0)-\log s_t.$$
+$$\log p_t(X_t)=\log p_0(X_0)-\log s_t$$
 
 空间长度扩大 $s_t$ 倍，沿轨迹的密度就缩小为原来的 $1/s_t$。
 
@@ -467,22 +472,22 @@ $$\log p_t(X_t)=\log p_0(X_0)-\log s_t.$$
 
 ### 为什么可以用最大似然训练
 
-设真实数据分布为 $q$，模型终点分布为 $p_1^\theta$。希望两者接近，可以最小化 $D_{\mathrm{KL}}(qp_1^\theta)$。在相关密度与期望有定义的条件下：
+设真实数据分布为 $q$，模型终点分布为 $p_1^\theta$。希望两者接近，可以最小化 $D_{\mathrm{KL}}(q\|p_1^\theta)$。在相关密度与期望有定义的条件下：
 
 $$\begin{aligned}
-D_{\mathrm{KL}}(qp_1^\theta)
-&=\mathbb E_{Y\sim q}\left[\log q(Y)-\log p_1^\theta(Y)\right]
+D_{\mathrm{KL}}(q\|p_1^\theta)
+&=\mathbb E_{Y\sim q}\left[\log q(Y)-\log p_1^\theta(Y)\right]\\
 &=\underbrace{\mathbb E_q[\log q(Y)]}_{\text{与参数无关}}
--\mathbb E_q[\log p_1^\theta(Y)].
+-\mathbb E_q[\log p_1^\theta(Y)]
 \end{aligned}$$
 
 因此，最小化 KL 等价于最小化负对数似然：
 
-$$\mathcal L(\theta)=-\mathbb E_{Y\sim q}\log p_1^\theta(Y).$$
+$$\mathcal L(\theta)=-\mathbb E_{Y\sim q}\log p_1^\theta(Y)$$
 
-不需要知道 $q$ 的完整公式，只需要能够获得真实样本。对一个 batch $y_i_{i=1}^B$，使用样本平均：
+不需要知道 $q$ 的完整公式，只需要能够获得真实样本。对一个 batch $\{y_i\}_{i=1}^B$，使用样本平均：
 
-$$\widehat{\mathcal L}(\theta)=-\frac1B\sum_{i=1}^B\log p_1^\theta(y_i).$$
+$$\widehat{\mathcal L}(\theta)=-\frac1B\sum_{i=1}^B\log p_1^\theta(y_i)$$
 
 这里的 KL 推导针对真实总体分布。有限数据集形成的是离散经验分布，不能直接把它与连续模型之间的 KL 当成有限的密度积分；实践中使用的是样本平均负对数似然。
 
@@ -492,30 +497,30 @@ $$\widehat{\mathcal L}(\theta)=-\frac1B\sum_{i=1}^B\log p_1^\theta(y_i).$$
 
 首先取一条真实数据 $y$，把它视为终点 $X_1=y$。使用当前速度网络，从 $t=1$ 反向积分到 $t=0$：
 
-$$\frac{dX_t}{dt}=u_t^\theta(X_t),\qquad X_1=y.$$
+$$\frac{dX_t}{dt}=u_t^\theta(X_t),\qquad X_1=y$$
 
 得到 $X_0=(\psi_1^\theta)^{-1}(y)$。这个 $X_0$ **不是随机抽取的噪声**，而是当前模型把 $y$ 反向映射得到的特定位置。
 
 同时沿轨迹累计散度：
 
-$$\log p_1^\theta(y)=\log p_0(X_0)-\int_0^1\nabla\cdot u_t^\theta(X_t)dt.$$
+$$\log p_1^\theta(y)=\log p_0(X_0)-\int_0^1\nabla\cdot u_t^\theta(X_t)dt$$
 
 虽然轨迹反向求解，这里的积分仍按 $0\to1$ 写，所以保留负号。
 
 若希望两个量一起反向求解，可引入辅助标量 $a_t$，设置 $a_1=0$，并统一采用以下符号约定：
 
-$$\frac{d}{dt}\begin{pmatrix}X_ta_t\end{pmatrix}
-=\begin{pmatrix}u_t^\theta(X_t)-\nabla\cdot u_t^\theta(X_t)\end{pmatrix},
-\qquad \begin{pmatrix}X_1a_1\end{pmatrix}=\begin{pmatrix}y0\end{pmatrix}.$$
+$$\frac{d}{dt}\begin{pmatrix}X_t\\a_t\end{pmatrix}
+=\begin{pmatrix}u_t^\theta(X_t)\\-\nabla\cdot u_t^\theta(X_t)\end{pmatrix},
+\qquad \begin{pmatrix}X_1\\a_1\end{pmatrix}=\begin{pmatrix}y\\0\end{pmatrix}$$
 
 因为积分方向是 $1\to0$：
 
 $$a_0=\int_1^0-\nabla\cdot u_t^\theta(X_t)dt
-=\int_0^1\nabla\cdot u_t^\theta(X_t)dt.$$
+=\int_0^1\nabla\cdot u_t^\theta(X_t)dt$$
 
 所以 $\log p_1^\theta(y)=\log p_0(X_0)-a_0$。对整个 batch 计算平均损失，再求参数梯度并更新：
 
-$$\theta\leftarrow\theta-\eta\nabla_\theta\widehat{\mathcal L}(\theta).$$
+$$\theta\leftarrow\theta-\eta\nabla_\theta\widehat{\mathcal L}(\theta)$$
 
 1. 01**真实样本 y**
   作为终点 X₁
@@ -536,31 +541,31 @@ $X_0$、整条轨迹和散度都依赖 $\theta$，因此梯度必须考虑参数
 
 设一维速度场只有一个参数：
 
-$$u_t^\theta(x)=\theta x.$$
+$$u_t^\theta(x)=\theta x$$
 
 ODE 的解为 $X_t=e^{\theta t}X_0$。当 $X_0\sim\mathcal N(0,1)$ 时：
 
-$$X_1\sim\mathcal N(0,e^{2\theta}).$$
+$$X_1\sim\mathcal N(0,e^{2\theta})$$
 
 对于真实样本 $y$，有 $X_0=e^{-\theta}y$，散度 $\partial_xu_t^\theta=\theta$，于是：
 
 $$\log p_1^\theta(y)
-=-\frac12\log(2\pi)-\frac12e^{-2\theta}y^2-\theta.$$
+=-\frac12\log(2\pi)-\frac12e^{-2\theta}y^2-\theta$$
 
 若真实分布为 $q=\mathcal N(0,\sigma_*^2)$，其中 $\sigma_*>0$，则总体负对数似然为：
 
 $$\mathcal L(\theta)
-=\frac12\log(2\pi)+\theta+\frac12\sigma_*^2e^{-2\theta}.$$
+=\frac12\log(2\pi)+\theta+\frac12\sigma_*^2e^{-2\theta}$$
 
 求导并令导数为零：
 
-$$\frac{d\mathcal L}{d\theta}=1-\sigma_*^2e^{-2\theta}=0.$$
+$$\frac{d\mathcal L}{d\theta}=1-\sigma_*^2e^{-2\theta}=0$$
 
 得到 $e^{2\theta}=\sigma_*^2$，即 $\theta^*=\log\sigma_*$，此时 $p_1^{\theta^*}=q$。
 
 下面为可视化取 $\sigma_*=2$，即目标 $\mathcal N(0,4)$。拖动参数，或按“梯度更新一步”，可以看到终点密度与损失如何一起变化。图中直接计算解析解，没有在后台训练神经网络。
 
-
+<!-- cnf-training-demo -->
 
 训练没有给每个样本标注正确速度，也没有指定中间路径。它只要求终点密度拟合真实数据，梯度便通过密度变化关系调整速度参数。
 
@@ -580,12 +585,12 @@ ODE 求解器会在多个时间点反复调用速度网络，因此损失计算�
 
 $$\nabla\cdot u_t^\theta(x)
 =\operatorname{tr}\left(D_xu_t^\theta(x)\right)
-=\sum_{k=1}^d\frac{\partial u_{t,k}^\theta(x)}{\partial x_k}.$$
+=\sum_{k=1}^d\frac{\partial u_{t,k}^\theta(x)}{\partial x_k}$$
 
 高维情况下，精确计算可能很贵。可以使用 Hutchinson 迹估计降低成本。若随机向量 $\varepsilon$ 均值为零、协方差为单位阵，则：
 
 $$\operatorname{tr}\left(D_xu_t^\theta(x)\right)
-=\mathbb E_\varepsilon\left[\varepsilon^\top D_xu_t^\theta(x)\varepsilon\right].$$
+=\mathbb E_\varepsilon\left[\varepsilon^\top D_xu_t^\theta(x)\varepsilon\right]$$
 
 自动微分可以计算所需的 Jacobian 向量乘积，而不显式构造完整矩阵。但最终训练梯度仍需考虑轨迹与这些导数计算对参数的依赖。
 
@@ -595,7 +600,7 @@ $$\operatorname{tr}\left(D_xu_t^\theta(x)\right)
 
 Flow 与速度场，是同一运动的两种描述。速度场告诉你“此刻该怎么走”，Flow 告诉你“从起点出发，到时刻 $t$ 已经到了哪里”。给定初始分布 $X_0\sim p_0$，便得到：
 
-$$X_t=\psi_t(X_0),\qquad p_t=(\psi_t)_p_0.$$
+$$X_t=\psi_t(X_0),\qquad p_t=(\psi_t)_\#p_0$$
 
 前者描述单个样本的运动，后者描述整个分布的运输。在适当正则条件下，$\psi_t$ 可微且可逆，$X_t$ 构成确定性 Markov 过程。
 
@@ -604,7 +609,7 @@ $$X_t=\psi_t(X_0),\qquad p_t=(\psi_t)_p_0.$$
 | -------------- | ------------------- | ---------------------------------------------------- |
 | Flow           | 从起点出发，到时刻 $t$ 到了哪里？ | $X_t=\psi_t(X_0)$                                    |
 | Velocity Field | 此刻在这里应该怎样运动？        | $\dot X_t=u_t(X_t)$                                  |
-| Push-forward   | 所有样本这样运动后形成什么分布？    | $p_t=(\psi_t)_p_0$                                   |
+| Push-forward   | 所有样本这样运动后形成什么分布？    | $p_t=(\psi_t)_\#p_0$                                   |
 | 连续性方程          | 运动与密度变化是否一致？        | $\partial_tp_t+\nabla\cdot(p_tu_t)=0$                |
 | 瞬时变量替换         | 沿着轨迹，密度怎样改变？        | $\frac{d}{dt}\log p_t(X_t)=-\nabla\cdot u_t(X_t)$    |
 | CNF            | 如何把这套变换变成可学习的模型？    | $\theta\to u_t^\theta\to\psi_t^\theta\to p_1^\theta$ |

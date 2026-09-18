@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import { marked } from "marked";
 import katex from "katex";
 import { cnfVisuals } from "./flow-visuals.mjs";
+import { gaussianDemo } from "./gaussian-demo.mjs";
 
 const toolsDir = path.dirname(fileURLToPath(import.meta.url));
 // Support both the local docs/ workspace and the root-based GitHub Pages repo.
@@ -12,7 +13,7 @@ const siteDir = process.env.SITE_OUTPUT_DIR
   : path.resolve(toolsDir, fs.existsSync(path.resolve(toolsDir, "../docs/index.html")) ? "../docs" : "..");
 const outputDir = path.join(siteDir, "blog");
 const posts = JSON.parse(fs.readFileSync(path.join(toolsDir, "posts.json"), "utf8"));
-const version = "20260918-cnf-1";
+const version = "20260918-gaussian-2";
 const escape = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 const formula = (tex, displayMode = false) => katex.renderToString(tex, { displayMode, throwOnError: true, output: "htmlAndMathml", strict: "error" });
 const articlePath = (post) => post.seriesSlug + "/" + post.slug + "/";
@@ -37,7 +38,7 @@ function header(home, blog, isArticle) {
 }
 
 function shell({ title, description, relative, body, canonical, article = false }) {
-  return '<!doctype html>\n<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="' + escape(description) + '"><meta name="theme-color" content="#f8f9fb"><meta property="og:type" content="' + (article ? "article" : "website") + '"><meta property="og:title" content="' + escape(title) + '"><meta property="og:description" content="' + escape(description) + '"><link rel="canonical" href="https://tanshenghan.github.io/blog/' + canonical + '"><title>' + escape(title) + ' · 谭圣涵</title><link rel="stylesheet" href="' + relative + 'vendor/katex/katex.min.css"><link rel="stylesheet" href="' + relative + 'blog.css?v=' + version + '"><script src="' + relative + 'blog.js?v=' + version + '" defer></script>' + (article ? '<link rel="stylesheet" href="' + relative + 'flow-visuals.css?v=' + version + '"><script src="' + relative + 'flow-visuals.js?v=' + version + '" defer></script>' : '') + '</head><body>' +
+  return '<!doctype html>\n<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="' + escape(description) + '"><meta name="theme-color" content="#f8f9fb"><meta property="og:type" content="' + (article ? "article" : "website") + '"><meta property="og:title" content="' + escape(title) + '"><meta property="og:description" content="' + escape(description) + '"><link rel="canonical" href="https://tanshenghan.github.io/blog/' + canonical + '"><title>' + escape(title) + ' · 谭圣涵</title><link rel="stylesheet" href="' + relative + 'vendor/katex/katex.min.css"><link rel="stylesheet" href="' + relative + 'blog.css?v=' + version + '"><script src="' + relative + 'blog.js?v=' + version + '" defer></script>' + (article ? '<link rel="stylesheet" href="' + relative + 'flow-visuals.css?v=' + version + '"><script src="' + relative + 'flow-visuals.js?v=' + version + '" defer></script><script src="' + relative + 'gaussian-demo.js?v=' + version + '" defer></script>' : '') + '</head><body>' +
     header(relative + "../", relative || "./", article) + body +
     '<footer class="blog-footer"><span>© 2026 谭圣涵 · Shenghan Tan</span><a href="' + (relative || "./") + '">技术博客</a><a href="#top">回到顶部 ↑</a></footer></body></html>\n';
 }
@@ -61,7 +62,7 @@ for (const slug of series) {
   fs.writeFileSync(path.join(dir, "index.html"), shell({ title: list[0].series, description: "从概率运输与 ODE flow 开始的 Flow Matching 学习笔记。", relative: "../", body, canonical: slug + "/" }));
 }
 
-const demo = '<figure class="flow-demo"><figcaption><span class="eyebrow">INTERACTIVE NOTE 01</span><h3>把空间拉长，概率质量会怎样？</h3><p>拖动时间滑块，观察同一组粒子与密度一起变化。</p></figcaption><svg id="density-demo" viewBox="0 0 620 250" role="img" aria-label="均匀分布在拉伸映射下的密度变化"><title>映射 ψₜ(x) = (1+t)x：区间变宽，密度降低，面积保持为 1</title><g class="demo-grid"><path d="M45 40H575 M45 100H575 M45 160H575 M45 220H575" /></g><path class="demo-axis" d="M45 25V220H585"/><rect class="density-original" x="45" y="60" width="250" height="160"/><rect id="density-area" class="density-area" x="45" y="92" width="312.5" height="128"/><g id="flow-particles"></g><g class="demo-labels"><text x="23" y="65">1</text><text x="17" y="145">½</text><text x="41" y="241">0</text><text x="291" y="241">1</text><text x="541" y="241">2</text><text x="10" y="19">pₜ</text><text x="591" y="222">x</text></g></svg><div class="demo-controls"><button id="flow-play" type="button" aria-label="播放概率运输演示">播放</button><label for="flow-time">时间 t</label><input id="flow-time" type="range" min="0" max="100" step="1" value="25"><output for="flow-time" id="flow-time-value">0.25</output></div><div class="demo-metrics"><span>区间长度 <b id="flow-length">1.25</b></span><span>密度 <b id="flow-density">0.80</b></span><span>概率质量 <b>1.00</b></span></div><p class="figure-note">ψₜ(x) = (1+t)x，X₀ ~ Uniform[0,1]。虚线表示初始密度，蓝色表示当前密度；圆点表示固定初值的运动。无需重新采样。</p><noscript><p>当前展示 t = 0.25：区间长度 1.25，密度 0.8，总概率 1。启用 JavaScript 可拖动时间。</p></noscript></figure>';
+const demo = gaussianDemo;
 const strip = '<figure class="concept-strip"><div><span>01 / VELOCITY</span><strong>速度场</strong><p>此刻该怎么走</p></div><i aria-hidden="true">→</i><div><span>02 / FLOW</span><strong>粒子轨迹</strong><p>从起点走到哪里</p></div><i aria-hidden="true">→</i><div><span>03 / DISTRIBUTION</span><strong>分布运输</strong><p>所有点形成什么分布</p></div></figure>';
 const actionDiagram = '<figure class="action-diagram"><div class="condition-row"><span>图像</span><span>语言指令</span><span>机器人状态</span><b>固定条件 c ↓</b></div><div class="action-flow"><div><small>NOISE</small><strong>A₀</strong><span>112 维</span></div><p>条件速度场 uθ<br><span>→ ODE 积分 →</span></p><div><small>ACTION CHUNK</small><strong>A₁</strong><span>16 步 × 7 维</span></div></div><figcaption>被运输的是整个动作块；条件负责影响它如何移动。</figcaption></figure>';
 
