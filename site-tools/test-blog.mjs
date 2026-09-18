@@ -160,9 +160,13 @@ const posts = JSON.parse(fs.readFileSync(path.join(toolsDir, "posts.json"), "utf
 const post = posts.find((entry) => entry.slug === "flow-random-variables-deterministic-markov");
 assert.ok(post, "the existing first Flow article must remain in posts.json");
 assert.equal(post.title, "从 Flow ，Velocity Field 到 CNF", "article metadata must use the requested title");
+assert.equal(post.author, "shong Tan", "only this article's byline uses the requested display name");
 const articleFile = path.join(blogDir, post.seriesSlug, post.slug, "index.html");
 const article = fs.readFileSync(articleFile, "utf8");
 assert.ok(article.includes(`<h1>${escapeHtml(post.title)}</h1>`), "article h1 must match its metadata");
+assert.ok(article.includes('<div class="article-meta"><span>shong Tan</span>'), "the author below the article title must use shong Tan");
+assert.ok(article.includes('<span>谭圣涵<small>SHENGHAN TAN</small></span>'), "the site header name must remain unchanged");
+assert.ok(article.includes('© 2026 谭圣涵 · Shenghan Tan'), "the site footer name must remain unchanged");
 assert.ok(article.includes(`<title>${escapeHtml(post.title)} · 谭圣涵</title>`), "document title must match its metadata");
 assert.equal([...article.matchAll(/<figure\b[^>]*\bclass="[^"]*\bgaussian-demo\b[^"]*"/g)].length, 1, "article must include exactly one first Gaussian drag figure");
 assert.ok(article.includes("gaussian-demo.js"), "article must load the first Gaussian figure runtime");
