@@ -29,13 +29,28 @@
     const rightFlux = gaussian(2, state.mean, state.sigma) * 4 / (1 + t);
     return { ...state, leftFlux, rightFlux, rate: leftFlux - rightFlux, mass: normalCdf((2 - state.mean) / state.sigma) - normalCdf(-state.mean / state.sigma) };
   }
+  function continuityStep(t, dt) {
+    const state = continuityState(t);
+    const leftDensity = gaussian(0, state.mean, state.sigma);
+    const rightDensity = gaussian(2, state.mean, state.sigma);
+    const leftSpeed = 2 / (1 + t);
+    const rightSpeed = 4 / (1 + t);
+    const leftMass = state.leftFlux * dt;
+    const rightMass = state.rightFlux * dt;
+    const deltaExact = continuityState(t + dt).mass - state.mass;
+    return { ...state, dt, leftDensity, rightDensity, leftSpeed, rightSpeed,
+      leftWidth: leftSpeed * dt, rightWidth: rightSpeed * dt,
+      leftMass, rightMass, deltaApprox: leftMass - rightMass, deltaExact,
+      finiteRate: deltaExact / dt };
+  }
   function trainingState(theta) {
     return { theta, sigma: Math.exp(theta), loss: 0.5 * Math.log(2 * Math.PI) + theta + 2 * Math.exp(-2 * theta), gradient: 1 - 4 * Math.exp(-2 * theta) };
   }
   const plots = {
     transport: { left: 45, right: 495, top: 24, bottom: 197, xmin: -4, xmax: 8, ymax: 0.45 },
+    continuity: { left: 55, right: 590, top: 55, bottom: 226, xmin: -0.8, xmax: 2.8, ymax: 0.48 },
     training: { left: 45, right: 495, top: 24, bottom: 197, xmin: -6, xmax: 6, ymax: 0.72 },
-    loss: { left: 45, right: 495, top: 24, bottom: 155, xmin: -0.5, xmax: 1.5, ymin: 1.8, ymax: 6.1 }
+    loss: { left: 45, right: 495, top: 24, bottom: 197, xmin: -0.5, xmax: 1.5, ymin: 1.8, ymax: 6.1 }
   };
   const px = (x, plot) => plot.left + (x - plot.xmin) / (plot.xmax - plot.xmin) * (plot.right - plot.left);
   const py = (y, plot) => plot.bottom - (y - (plot.ymin || 0)) / (plot.ymax - (plot.ymin || 0)) * (plot.bottom - plot.top);
@@ -50,12 +65,12 @@
     return { line, area: line + " L" + px(to, plot).toFixed(2) + " " + plot.bottom + " L" + px(from, plot).toFixed(2) + " " + plot.bottom + " Z" };
   }
   const lossGeometry = () => curve((theta) => trainingState(theta).loss, plots.loss);
-  const model = { gaussian, normalCdf, affineState, continuityState, trainingState, plots, px, py, curve, densityGeometry, lossGeometry };
+  const model = { gaussian, normalCdf, affineState, continuityState, continuityStep, trainingState, plots, px, py, curve, densityGeometry, lossGeometry };
   if (typeof module !== "undefined" && module.exports) module.exports = model;
   if (typeof document === "undefined") return;
 
   const fixed = (n, digits = 3) => n.toFixed(digits);
-  const signed = (n) => (n >= 0 ? "+" : "−") + Math.abs(n).toFixed(3);
+  const signed = (n, digits = 3) => (n >= 0 ? "+" : "−") + Math.abs(n).toFixed(digits);
   function setText(root, key, value) {
     const el = root.querySelector('[data-readout="' + key + '"]');
     if (el) el.textContent = value;
@@ -86,17 +101,32 @@
     setText(root, "state", "t = " + fixed(t, 2) + "：均值 " + fixed(state.mean, 2) + "，标准差 " + fixed(state.sigma, 2) + "；初值为 1 的粒子到达 " + fixed(state.particle, 2) + "，沿途速度始终为 3。");
     root.querySelector('input').setAttribute("aria-valuetext", "时间 " + fixed(t, 2));
   }
-  function updateContinuity(root, t) {
-    const state = continuityState(t);
-    updateDensity(root, state.mean, state.sigma);
-    setAttr(root, "interval-area", "d", densityGeometry(state.mean, state.sigma, plots.transport, 0, 2).area);
+  function updateContinuity(root, t, dt) {
+    const state = continuityStep(t, dt);
+    const plot = plots.continuity;
+    updateDensity(root, state.mean, state.sigma, plot);
+    setAttr(root, "interval-area", "d", densityGeometry(state.mean, state.sigma, plot, 0, 2).area);
+    for (const [side, boundary] of [["left", 0], ["right", 2]]) {
+      const from = px(boundary - state[side + "Width"], plot);
+      const to = px(boundary, plot);
+      const top = py(state[side + "Density"], plot);
+      setAttr(root, side + "-slab", "x", from);
+      setAttr(root, side + "-slab", "width", to - from);
+      setAttr(root, side + "-slab", "y", top);
+      setAttr(root, side + "-slab", "height", plot.bottom - top);
+      setAttr(root, side + "-width", "d", `M${from} 257v6H${to}v-6`);
+      setAttr(root, side + "-point", "cy", top);
+      setText(root, side + "-factors", fixed(state[side + "Density"]) + " × " + fixed(state[side + "Speed"]) + " × " + fixed(dt, 2));
+      setText(root, side + "-mass", fixed(state[side + "Mass"], 5));
+    }
     setText(root, "time", fixed(t, 2));
-    setText(root, "left-flux", signed(state.leftFlux));
-    setText(root, "right-flux", signed(state.rightFlux));
-    setText(root, "mass", fixed(state.mass));
+    setText(root, "dt", fixed(dt, 2));
+    setText(root, "delta-approx", signed(state.deltaApprox, 5));
+    setText(root, "finite-rate", signed(state.finiteRate));
     setText(root, "rate", signed(state.rate));
-    setText(root, "state", "区间概率为 " + fixed(state.mass) + "，当前" + (state.rate >= 0 ? "流入大于流出，概率正在增加" : "流出大于流入，概率正在减少") + "。变化率为 " + signed(state.rate) + "。");
+    setText(root, "state", "t = " + fixed(t, 2) + "，Δt = " + fixed(dt, 2) + "：一阶近似净变化 " + signed(state.deltaApprox, 5) + "；真实净变化 " + signed(state.deltaExact, 5) + "，绝对误差 " + fixed(Math.abs(state.deltaExact - state.deltaApprox), 5) + "。当 Δt 趋于 0，差商趋近瞬时净通量。");
     root.querySelector('input').setAttribute("aria-valuetext", "时间 " + fixed(t, 2));
+    root.querySelector('#cnf-continuity-dt').setAttribute("aria-valuetext", "小时间间隔 " + fixed(dt, 2));
   }
   function updateTraining(root, theta) {
     const state = trainingState(theta);
@@ -120,9 +150,11 @@
     const slider = root.querySelector("input[type=range]");
     const kind = root.dataset.cnfDemo;
     const update = kind === "affine" ? updateAffine : kind === "continuity" ? updateContinuity : updateTraining;
-    const render = () => update(root, Number(slider.value));
-    slider.disabled = false;
-    slider.addEventListener("input", render);
+    const render = () => update(root, Number(slider.value), Number(root.querySelector('#cnf-continuity-dt')?.value));
+    root.querySelectorAll('input[type=range]').forEach((input) => {
+      input.disabled = false;
+      input.addEventListener("input", render);
+    });
     root.querySelectorAll("button").forEach((button) => {
       button.disabled = false;
       button.addEventListener("click", () => {

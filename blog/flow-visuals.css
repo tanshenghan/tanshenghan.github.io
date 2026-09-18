@@ -1,5 +1,6 @@
 .cnf-figure { min-width: 0; margin: 34px 0; padding: 24px 0; border-block: 1px solid var(--line); color: var(--body); }
 .cnf-figure figcaption h3 { margin: 8px 0 10px; font-size: 19px; line-height: 1.6; }
+.cnf-figure figcaption h3[id] { scroll-margin-top: 120px; }
 .cnf-figure figcaption p { margin: 0; font-size: 13px; line-height: 1.85; }
 .cnf-legend { display: flex; flex-wrap: wrap; gap: 6px 20px; margin: 18px 0 5px; font-size: 11px; color: var(--muted); }
 .cnf-legend span { display: inline-flex; align-items: center; gap: 7px; }
@@ -53,6 +54,21 @@
 .cnf-optimum { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 3 4; }
 .cnf-optimum-label { fill: var(--muted); font-size: 12px; font-family: var(--sans); }
 .cnf-training-metrics { grid-template-columns: repeat(3, minmax(0,1fr)); }
+.cnf-training-panels { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 26px; margin-top: 22px; }
+.cnf-training-panel { min-width: 0; }
+.cnf-training-panel-head { min-height: 76px; }
+.cnf-training-panel h4 { margin: 0; color: var(--ink); font-size: 13px; font-weight: 600; line-height: 1.65; }
+.cnf-training-panel .cnf-legend { gap: 5px 14px; margin: 9px 0 0; font-size: 10px; }
+.cnf-training-panel .cnf-chart { margin: 12px 0 8px; overflow: hidden; }
+.cnf-training-panel .cnf-ticks { font-size: 17px; }
+.cnf-training-panel .cnf-optimum-label { font-size: 16px; }
+@media (max-width: 700px) {
+  .cnf-training-panels { grid-template-columns: minmax(0, 1fr); gap: 22px; }
+  .cnf-training-panel-head { min-height: 0; }
+  .cnf-training-panel + .cnf-training-panel { border-top: 1px solid var(--line); padding-top: 20px; }
+  .cnf-training-panel .cnf-ticks { font-size: 15px; }
+  .cnf-training-panel .cnf-optimum-label { font-size: 14px; }
+}
 @media (max-width: 500px) {
   .cnf-figure { padding-block: 20px; margin-block: 28px; }
   .cnf-figure figcaption h3 { font-size: 17px; }
@@ -74,3 +90,47 @@
 }
 @media (prefers-reduced-motion: reduce) { .cnf-actions button { transition: none; } }
 @media print { .cnf-controls, .cnf-actions { display: none; } .cnf-figure { break-inside: avoid; } }
+.cnf-continuity { --outflow: #ad642d; }
+[data-theme="dark"] .cnf-continuity { --outflow: #e5ae72; }
+.cnf-continuity .cnf-curve { stroke: var(--muted); stroke-width: 1.6; stroke-dasharray: 5 4; }
+.cnf-continuity .cnf-interval { fill-opacity: .055; }
+.cnf-continuity .cnf-legend .inflow { height: 10px; border: 0; background: var(--blue); opacity: .5; }
+.cnf-continuity .cnf-legend .outflow { height: 10px; border: 0; background: var(--outflow); opacity: .5; }
+.cnf-slab { fill: var(--blue); fill-opacity: .25; stroke: var(--blue); stroke-width: 1.5; }
+.cnf-slab.right { fill: var(--outflow); stroke: var(--outflow); }
+.cnf-slab-point { fill: var(--blue); }
+.cnf-slab-point.right { fill: var(--outflow); }
+.cnf-width, .cnf-flux-arrow.left { fill: none; stroke: var(--blue); stroke-width: 1.5; }
+.cnf-width.right, .cnf-flux-arrow.right { stroke: var(--outflow); }
+.cnf-width-label, .cnf-flux-label { fill: var(--blue); font: 14px var(--sans); }
+.cnf-width-label.right, .cnf-flux-label.right { fill: var(--outflow); }
+.cnf-flux-controls { padding-block: 8px; margin-top: 8px; }
+.cnf-flux-controls label { min-width: 80px; }
+.cnf-slab-factors { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 20px; padding-top: 16px; border-top: 1px solid var(--line); }
+.cnf-slab-factors p { margin: 0 0 14px; font-size: 12px; }
+.cnf-slab-factors strong { color: var(--blue); display: block; }
+.cnf-slab-factors p:last-child strong { color: var(--outflow); }
+.cnf-slab-factors span, .cnf-slab-factors code { display: block; margin-top: 6px; }
+.cnf-figure .cnf-slab-factors code, .cnf-figure .cnf-step-limit code { padding: 0; background: none; font-size: 11px; }
+.cnf-continuity [data-readout="right-mass"] { color: var(--outflow); }
+.cnf-step-limit { display: grid; grid-template-columns: minmax(0,1fr) 70px minmax(0,1fr); align-items: center; gap: 12px; margin: 24px 0 10px; text-align: center; }
+.cnf-step-limit div { display: flex; flex-direction: column; gap: 8px; font-size: 11px; }
+.cnf-step-limit b { font: 20px var(--mono); color: var(--blue); }
+.cnf-limit-arrow { font: 12px var(--mono); color: var(--muted); }
+.cnf-proof { border-top: 1px solid var(--line); margin-top: 20px; padding-top: 10px; }
+.cnf-figure .cnf-proof p { font-size: 12px; }
+.cnf-proof-equation { min-width: 0; overflow-x: auto; font-size: 13px; }
+.cnf-proof-equation .katex-display { margin: 12px 0; width: max-content; min-width: 100%; padding-block: 5px; }
+@media (max-width: 500px) {
+  .cnf-continuity .cnf-balance b { font-size: 14px; }
+  .cnf-flux-controls label { min-width: 65px; font-size: 11px; }
+  .cnf-slab-factors { gap: 12px; }
+  .cnf-slab-factors p { font-size: 11px; }
+  .cnf-slab-factors code { overflow-wrap: anywhere; }
+  .cnf-width-label, .cnf-flux-label { font-size: 20px; }
+  .cnf-step-limit { grid-template-columns: minmax(0,1fr) 40px minmax(0,1fr); gap: 6px; }
+  .cnf-step-limit div { font-size: 10px; }
+  .cnf-figure .cnf-step-limit code { font-size: 10px; overflow-wrap: anywhere; }
+  .cnf-limit-arrow { font-size: 10px; }
+  .cnf-step-limit b { font-size: 17px; }
+}
