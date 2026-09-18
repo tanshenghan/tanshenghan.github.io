@@ -18,6 +18,7 @@
 cd site-tools
 npm ci
 npm run build
+npm test
 ```
 
 脚本会自动识别本地 `docs/` 布局及 GitHub Pages 仓库根目录布局。也可通过 `SITE_OUTPUT_DIR` 指定站点目录。
@@ -32,6 +33,10 @@ npm run build
 4. 运行构建，检查生成的目录和正文，再提交发布。
 
 当前文章地址：`/blog/flow-matching/flow-random-variables-deterministic-markov/`。
+
+首篇现标题为「从 Flow ，Velocity Field 到 CNF」，为保持外链可用，沿用原地址。可用 `updated` 字段显示修订日期。
+
+交互图由 `flow-visuals.mjs` 生成静态 SVG，浏览器逻辑与解析函数在 `blog/flow-visuals.js`，样式在 `blog/flow-visuals.css`。Markdown 使用 `<!-- affine-demo -->`、`<!-- continuity-demo -->`、`<!-- cnf-training-demo -->` 插入。构建和浏览器共用计算函数，部署时需同步这些文件。
 
 博客的 SVG 图示与交互示例是针对首篇 Flow 笔记设计的。新增其他系列时，可在构建脚本中调整系列简介与文章插图。
 

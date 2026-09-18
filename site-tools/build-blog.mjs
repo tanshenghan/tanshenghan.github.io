@@ -3,6 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { marked } from "marked";
 import katex from "katex";
+import { cnfVisuals } from "./flow-visuals.mjs";
 
 const toolsDir = path.dirname(fileURLToPath(import.meta.url));
 // Support both the local docs/ workspace and the root-based GitHub Pages repo.
@@ -11,7 +12,7 @@ const siteDir = process.env.SITE_OUTPUT_DIR
   : path.resolve(toolsDir, fs.existsSync(path.resolve(toolsDir, "../docs/index.html")) ? "../docs" : "..");
 const outputDir = path.join(siteDir, "blog");
 const posts = JSON.parse(fs.readFileSync(path.join(toolsDir, "posts.json"), "utf8"));
-const version = "20260916-flow-1";
+const version = "20260918-cnf-1";
 const escape = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 const formula = (tex, displayMode = false) => katex.renderToString(tex, { displayMode, throwOnError: true, output: "htmlAndMathml", strict: "error" });
 const articlePath = (post) => post.seriesSlug + "/" + post.slug + "/";
@@ -36,7 +37,7 @@ function header(home, blog, isArticle) {
 }
 
 function shell({ title, description, relative, body, canonical, article = false }) {
-  return '<!doctype html>\n<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="' + escape(description) + '"><meta name="theme-color" content="#f8f9fb"><meta property="og:type" content="' + (article ? "article" : "website") + '"><meta property="og:title" content="' + escape(title) + '"><meta property="og:description" content="' + escape(description) + '"><link rel="canonical" href="https://tanshenghan.github.io/blog/' + canonical + '"><title>' + escape(title) + ' · 谭圣涵</title><link rel="stylesheet" href="' + relative + 'vendor/katex/katex.min.css"><link rel="stylesheet" href="' + relative + 'blog.css?v=' + version + '"><script src="' + relative + 'blog.js?v=' + version + '" defer></script></head><body>' +
+  return '<!doctype html>\n<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="' + escape(description) + '"><meta name="theme-color" content="#f8f9fb"><meta property="og:type" content="' + (article ? "article" : "website") + '"><meta property="og:title" content="' + escape(title) + '"><meta property="og:description" content="' + escape(description) + '"><link rel="canonical" href="https://tanshenghan.github.io/blog/' + canonical + '"><title>' + escape(title) + ' · 谭圣涵</title><link rel="stylesheet" href="' + relative + 'vendor/katex/katex.min.css"><link rel="stylesheet" href="' + relative + 'blog.css?v=' + version + '"><script src="' + relative + 'blog.js?v=' + version + '" defer></script>' + (article ? '<link rel="stylesheet" href="' + relative + 'flow-visuals.css?v=' + version + '"><script src="' + relative + 'flow-visuals.js?v=' + version + '" defer></script>' : '') + '</head><body>' +
     header(relative + "../", relative || "./", article) + body +
     '<footer class="blog-footer"><span>© 2026 谭圣涵 · Shenghan Tan</span><a href="' + (relative || "./") + '">技术博客</a><a href="#top">回到顶部 ↑</a></footer></body></html>\n';
 }
@@ -76,7 +77,10 @@ for (const post of posts) {
   let html = marked.parse(source);
   html = html.replace(/<p>MATHBLOCK(\d+)TOKEN<\/p>/g, (_, i) => math[+i]);
   html = html.replace(/MATHINLINE(\d+)TOKEN/g, (_, i) => math[+i]);
-  html = html.replace("<!-- flow-demo -->", demo).replace("<!-- concept-strip -->", strip).replace("<!-- action-diagram -->", actionDiagram);
+  html = html.replace("<!-- flow-demo -->", demo).replace("<!-- concept-strip -->", strip).replace("<!-- action-diagram -->", actionDiagram)
+    .replace("<!-- affine-demo -->", cnfVisuals.affine)
+    .replace("<!-- continuity-demo -->", cnfVisuals.continuity)
+    .replace("<!-- cnf-training-demo -->", cnfVisuals.training);
   html = html.replace(/<table>/g, '<div class="table-scroll" tabindex="0" role="region" aria-label="内容对照表，可横向滚动"><table>').replace(/<\/table>/g, "</table></div>");
   const headings = [];
   html = html.replace(/<h2>([\s\S]*?)<\/h2>/g, (_, title) => {
@@ -85,13 +89,9 @@ for (const post of posts) {
     return '<h2 id="' + id + '">' + title + '</h2>';
   });
   const toc = headings.map((h) => '<a href="#' + h.id + '">' + h.title + '</a>').join("");
-  const body = '<main id="main"><div class="article-shell" id="top"><nav class="breadcrumbs" aria-label="面包屑"><a href="../../">BLOG</a><span>/</span><a href="../">' + escape(post.series) + '</a><span>/</span><span>笔记 ' + post.number + '</span></nav><header class="article-heading"><p class="eyebrow">' + escape(post.series) + ' / NOTE ' + post.number + '</p><h1>Flow-从随机变量到<br class="desktop-break">确定性 Markov 过程</h1><p class="article-subtitle">一条连接粒子轨迹、概率分布与条件动作生成的概念路径。</p><div class="article-meta"><span>谭圣涵</span><time datetime="' + post.date + '">' + post.date.replaceAll("-", ".") + '</time><span>' + post.minutes + ' 分钟阅读</span><span>中文笔记</span></div><div class="article-art">' + flowArt() + '<p>ONE VECTOR FIELD.<br>MANY INITIAL STATES.</p></div></header><div class="reading-layout"><aside class="toc-desktop"><p class="eyebrow">ON THIS PAGE</p><nav aria-label="文章目录">' + toc + '</nav><a class="toc-back" href="../">← 返回系列目录</a></aside><div class="reading-column"><details class="toc-mobile"><summary>本文目录 <span>展开 / 收起</span></summary><nav aria-label="移动端文章目录">' + toc + '</nav></details><article class="prose">' + html + '</article><nav class="article-end" aria-label="继续阅读"><a href="../"><small>继续这段旅程</small><strong>Flow matching之旅 <span>↗</span></strong></a><a href="../../">全部技术博客 →</a></nav></div></div></div></main>';
+  const body = '<main id="main"><div class="article-shell" id="top"><nav class="breadcrumbs" aria-label="面包屑"><a href="../../">BLOG</a><span>/</span><a href="../">' + escape(post.series) + '</a><span>/</span><span>笔记 ' + post.number + '</span></nav><header class="article-heading"><p class="eyebrow">' + escape(post.series) + ' / NOTE ' + post.number + '</p><h1>' + escape(post.title) + '</h1><p class="article-subtitle">' + escape(post.subtitle || post.description) + '</p><div class="article-meta"><span>谭圣涵</span><time datetime="' + post.date + '">' + post.date.replaceAll("-", ".") + '</time>' + (post.updated ? '<span>更新于 <time datetime="' + post.updated + '">' + post.updated.replaceAll("-", ".") + '</time></span>' : '') + '<span>' + post.minutes + ' 分钟阅读</span><span>中文笔记</span></div><div class="article-art">' + flowArt() + '<p>ONE VECTOR FIELD.<br>MANY INITIAL STATES.</p></div></header><div class="reading-layout"><aside class="toc-desktop"><p class="eyebrow">ON THIS PAGE</p><nav aria-label="文章目录">' + toc + '</nav><a class="toc-back" href="../">← 返回系列目录</a></aside><div class="reading-column"><details class="toc-mobile"><summary>本文目录 <span>展开 / 收起</span></summary><nav aria-label="移动端文章目录">' + toc + '</nav></details><article class="prose">' + html + '</article><nav class="article-end" aria-label="继续阅读"><a href="../"><small>继续这段旅程</small><strong>' + escape(post.series) + ' <span>↗</span></strong></a><a href="../../">全部技术博客 →</a></nav></div></div></div></main>';
   const dest = path.join(outputDir, articlePath(post));
   fs.mkdirSync(dest, { recursive: true });
-  const pageBody = body
-    .replace('Flow-从随机变量到<br class="desktop-break">确定性 Markov 过程', escape(post.title).replace("到确定性", '到<br class="desktop-break">确定性'))
-    .replace("一条连接粒子轨迹、概率分布与条件动作生成的概念路径。", escape(post.subtitle || post.description))
-    .replace('<strong>Flow matching之旅 <span>', '<strong>' + escape(post.series) + ' <span>');
-  fs.writeFileSync(path.join(dest, "index.html"), shell({ title: post.title, description: post.description, relative: "../../", body: pageBody, canonical: articlePath(post), article: true }));
+  fs.writeFileSync(path.join(dest, "index.html"), shell({ title: post.title, description: post.description, relative: "../../", body, canonical: articlePath(post), article: true }));
   console.log("Built:", articlePath(post), "—", headings.length, "sections,", math.length, "formulas");
 }

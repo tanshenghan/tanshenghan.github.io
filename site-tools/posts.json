@@ -1,15 +1,16 @@
 [
   {
-    "title": "Flow-从随机变量到确定性 Markov 过程",
+    "title": "从 Flow ，Velocity Field 到 CNF",
     "slug": "flow-random-variables-deterministic-markov",
     "series": "Flow matching之旅",
     "seriesSlug": "flow-matching",
     "number": "01",
     "date": "2026-09-16",
-    "description": "从一个随机变量出发，理解空间映射如何运输概率分布，以及 ODE flow 为什么是确定性的 Markov 过程。最后，把这些概念放回 VLA 的动作生成中。",
-    "subtitle": "一条连接粒子轨迹、概率分布与条件动作生成的概念路径。",
-    "tags": ["Flow", "概率运输", "ODE", "VLA"],
+    "updated": "2026-09-18",
+    "description": "从空间变换与速度场出发，经由连续性方程和瞬时变量替换公式，理解 CNF 如何通过终点密度学习连续动力学。附概率运输、边界通量与一维 CNF 训练的交互示例。",
+    "subtitle": "空间如何运动，分布如何演化，以及终点的似然怎样训练速度场。",
+    "tags": ["Flow", "Velocity Field", "连续性方程", "CNF"],
     "source": "flow-foundations.md",
-    "minutes": 16
+    "minutes": 32
   }
 ]

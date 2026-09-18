@@ -2,6 +2,6 @@
   "name": "shenghan-blog-builder",
   "private": true,
   "type": "module",
-  "scripts": { "build": "node build-blog.mjs" },
+  "scripts": { "build": "node build-blog.mjs", "test": "node test-blog.mjs" },
   "dependencies": { "katex": "0.16.22", "marked": "15.0.12" }
 }
