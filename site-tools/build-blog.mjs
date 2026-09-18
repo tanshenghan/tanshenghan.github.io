@@ -13,7 +13,7 @@ const siteDir = process.env.SITE_OUTPUT_DIR
   : path.resolve(toolsDir, fs.existsSync(path.resolve(toolsDir, "../docs/index.html")) ? "../docs" : "..");
 const outputDir = path.join(siteDir, "blog");
 const posts = JSON.parse(fs.readFileSync(path.join(toolsDir, "posts.json"), "utf8"));
-const version = "20260918-continuity-3";
+const version = "20260918-continuity-columns-4";
 const escape = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 const formula = (tex, displayMode = false) => katex.renderToString(tex, { displayMode, throwOnError: true, output: "htmlAndMathml", strict: "error" });
 const articlePath = (post) => post.seriesSlug + "/" + post.slug + "/";

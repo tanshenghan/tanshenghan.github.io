@@ -53,6 +53,8 @@ PUSH-FORWARD
 
 <!-- flow-demo -->
 
+
+
 在高维空间中，映射 $y=\psi(x)$ 会改变局部体积。这个局部体积变化由 Jacobian determinant 描述：
 
 $$\left|\det D\psi(x)\right|=\left|\det\frac{\partial\psi}{\partial x}\right|$$
@@ -105,6 +107,8 @@ $$X_t\sim\mathcal N\left(2t,(1+t)^2\right)$$
 
 <!-- affine-demo -->
 
+
+
 ### Flow 为什么是 Markov 的
 
 Markov 性表达的是：**给定当前状态以后，未来不再需要更早的历史。**
@@ -125,6 +129,8 @@ $$X_s=\Phi_{t,s}(X_t)$$
 
 - **为什么还是“确定性的” Markov？** 只要当前状态确定为 $X_t=x$，给定当前与未来时刻后，未来就是唯一的 $X_s=\Phi_{t,s}(x)$。
 - **随机性到底在哪里？** $X_0$ 是随机抽取的，所以不同初始样本产生不同轨迹 $X_t=\psi_t(X_0)$。
+
+
 
 ## 03 · Velocity Field：Flow 的局部运动规则
 
@@ -273,6 +279,8 @@ $$\boxed{\partial_tp_t(x)+\partial_x\bigl(p_t(x)u_t(x)\bigr)=0}$$
 这就是一维连续性方程。下图把刚才的推导画出来：边界左侧的小矩形，宽为 $u_t(x)\Delta t$、高为 $p_t(x)$，面积近似表示穿过边界的概率质量。左端流入减去右端流出，就是区间概率的一阶变化；再除以 $\Delta t$ 并取极限，得到上面的守恒关系。绘图沿用平移与缩放的高斯例子，并取 $a=0,b=2$。
 
 <!-- continuity-demo -->
+
+
 
 ### 高维连续性方程与散度
 
@@ -468,8 +476,6 @@ $$\log p_t(X_t)=\log p_0(X_0)-\log s_t$$
 
 ## 10 · CNF 具体训练：用终点密度间接学习速度
 
-以下按原稿第 10–11 页的训练说明补全缺失公式。核心是：**通过“终点密度的损失”间接学习速度。**
-
 ### 为什么可以用最大似然训练
 
 设真实数据分布为 $q$，模型终点分布为 $p_1^\theta$。希望两者接近，可以最小化 $D_{\mathrm{KL}}(q\|p_1^\theta)$。在相关密度与期望有定义的条件下：
@@ -522,13 +528,13 @@ $$a_0=\int_1^0-\nabla\cdot u_t^\theta(X_t)dt
 
 $$\theta\leftarrow\theta-\eta\nabla_\theta\widehat{\mathcal L}(\theta)$$
 
-1. 01**真实样本 y**
+1. **真实样本 y：**
   作为终点 X₁
-2. 02**反向求解 ODE**
+2. **反向求解 ODE：**
   得到 X₀ 与累计散度 a₀
-3. 03**计算 NLL**
+3. **计算 NLL：**
   −log p₀(X₀) + a₀
-4. 04**求梯度，更新 θ**
+4. **求梯度，更新 θ：**
   改变下一轮的速度场
 
 反向积分寻找对应起点；反向传播计算参数梯度。两者不是同一件事。
@@ -536,8 +542,6 @@ $$\theta\leftarrow\theta-\eta\nabla_\theta\widehat{\mathcal L}(\theta)$$
 $X_0$、整条轨迹和散度都依赖 $\theta$，因此梯度必须考虑参数如何影响完整的动力学过程。可以对数值求解器反向传播，也可以使用伴随方法。
 
 ## 11 · 一个例子：只学习方差的一维 CNF
-
-原稿这一节的公式均为空白，文字明确说明例子只有一个参数、只能学习方差。这里用 $u_t^\theta(x)=\theta x$ 补全一个与该说明一致的解析例子，保留原稿的推导顺序；这不是对不可见公式的逐字转录。
 
 设一维速度场只有一个参数：
 
@@ -567,6 +571,8 @@ $$\frac{d\mathcal L}{d\theta}=1-\sigma_*^2e^{-2\theta}=0$$
 
 <!-- cnf-training-demo -->
 
+
+
 训练没有给每个样本标注正确速度，也没有指定中间路径。它只要求终点密度拟合真实数据，梯度便通过密度变化关系调整速度参数。
 
 这个模型只能学习方差，不能学习非零均值或多峰分布。因此，**训练目标是否合理，与模型是否具备足够表达能力，是两个不同的问题。**
@@ -581,20 +587,17 @@ $$\frac{d\mathcal L}{d\theta}=1-\sigma_*^2e^{-2\theta}=0$$
 
 ODE 求解器会在多个时间点反复调用速度网络，因此损失计算通常需要多次网络评估。
 
-散度又是网络对输入的导数。补全原稿该处公式：
+散度又是网络对输入的导数。
 
 $$\nabla\cdot u_t^\theta(x)
 =\operatorname{tr}\left(D_xu_t^\theta(x)\right)
 =\sum_{k=1}^d\frac{\partial u_{t,k}^\theta(x)}{\partial x_k}$$
 
-高维情况下，精确计算可能很贵。可以使用 Hutchinson 迹估计降低成本。若随机向量 $\varepsilon$ 均值为零、协方差为单位阵，则：
-
-$$\operatorname{tr}\left(D_xu_t^\theta(x)\right)
-=\mathbb E_\varepsilon\left[\varepsilon^\top D_xu_t^\theta(x)\varepsilon\right]$$
+高维情况下，精确计算很贵。
 
 自动微分可以计算所需的 Jacobian 向量乘积，而不显式构造完整矩阵。但最终训练梯度仍需考虑轨迹与这些导数计算对参数的依赖。
 
-理论上的密度公式是精确的，实际 ODE 数值求解和随机迹估计仍存在误差。控制这些误差，通常又会增加计算成本。
+理论上密度公式是精确的，实际 ODE 数值求解和随机迹估计存在误差。这些误差通常又会增加计算成本。
 
 ## 13 · 概念梳理总结
 
@@ -625,6 +628,4 @@ Flow 描述运动，速度场给出局部规则，概率守恒连接分布；CNF
 
 ### 整理说明与延伸阅读
 
-本文基于《从 Flow-Velocity Field-分布到 CNF 训练》12 页笔记整理。保留原稿章节的先后关系，统一 push-forward 和求导符号，补明全局可解性条件，并将原 PDF 中显示为空白的公式按上下文补全。交互图中的 $[0,2]$ 观察区间与 $\sigma_*=2$ 是绘图选择；一维训练模型是与原文描述一致的补全示例。
-
-瞬时变量替换与 CNF 的原始讨论可参见 [Chen 等，Neural Ordinary Differential Equations](https://arxiv.org/abs/1806.07366)；连续流中的随机迹估计可参见 [Grathwohl 等，FFJORD](https://arxiv.org/abs/1810.01367)。这些链接用于核对补全公式，并未替换原稿的叙述结构。
+瞬时变量替换与 CNF 的原始讨论可参见 [Chen 等，Neural Ordinary Differential Equations](https://arxiv.org/abs/1806.07366)；连续流中的随机迹估计可参见 [Grathwohl 等，FFJORD](https://arxiv.org/abs/1810.01367)。

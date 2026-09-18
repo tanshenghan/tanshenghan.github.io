@@ -61,16 +61,18 @@ function boundary(x, label, side) {
 }
 const continuity = `<figure class="cnf-figure cnf-continuity" data-cnf-demo="continuity" aria-labelledby="continuity-title">
 <figcaption><span class="eyebrow">ANALYTIC EXAMPLE · 02</span><h3 id="continuity-title">把一维概率守恒，画成边界上的两个小矩形</h3><p>宽 uₜ(x)Δt × 高 pₜ(x) ≈ 穿过边界的概率质量。固定 [a, b] = [0, 2]，看左端流入与右端流出。</p></figcaption>
+<div class="cnf-continuity-panels"><div class="cnf-continuity-visual">
 ${legend([["reference", "当前密度 pₜ"], ["inflow", "流入的一阶矩形"], ["outflow", "流出的一阶矩形"]])}
 <svg class="cnf-chart cnf-flux-chart" viewBox="0 0 640 300" role="img" aria-labelledby="continuity-svg-title"><title id="continuity-svg-title">固定区间零到二：蓝色矩形在左边界外，橙色矩形在右边界内；两个矩形面积是一阶穿越概率近似，箭头均向右</title><g class="cnf-grid">${[0.2, 0.4].map((y) => `<path d="M${cp.left} ${py(y, cp)}H${cp.right}"/>`).join("")}</g><path class="cnf-axis" d="M${cp.left} 55V${cp.bottom}H${cp.right}"/><g class="cnf-ticks">${[0, 0.2, 0.4].map((y) => `<text x="${cp.left - 8}" y="${py(y, cp) + 4}" text-anchor="end">${y}</text>`).join("")}<text x="18" y="43">pₜ(x)</text><text x="606" y="230">x</text></g><path class="cnf-interval" data-part="interval-area" d="${interval.area}"/><path class="cnf-curve" data-part="density" d="${densityGeometry(c.mean, c.sigma, cp).line}"/>${slab("left", 0)}${slab("right", 2)}${boundary(0, "a = 0", "left")}${boundary(2, "b = 2", "right")}</svg>
 <p class="cnf-note">两个矩形都在各自边界的左侧，箭头均向右：蓝色从区间外进入，橙色从区间内离开。矩形只是一阶近似，不等于有限 Δt 内的精确穿越概率。</p>
 <div class="cnf-flux-controls">${slider("cnf-continuity-time", "观察时刻 t", c.t, 0, 0.8)}<div class="cnf-controls"><label for="cnf-continuity-dt">小时间 Δt</label><input id="cnf-continuity-dt" type="range" min="0.01" max="0.2" step="0.01" value="0.15" disabled><output for="cnf-continuity-dt" data-readout="dt">0.15</output></div></div>
+</div><div class="cnf-continuity-detail">
 <div class="cnf-slab-factors"><p><strong>流入：高 × 宽</strong><span>pₜ(a) × uₜ(a) × Δt</span><code data-readout="left-factors">${f(c.leftDensity)} × ${f(c.leftSpeed)} × 0.15</code></p><p><strong>流出：高 × 宽</strong><span>pₜ(b) × uₜ(b) × Δt</span><code data-readout="right-factors">${f(c.rightDensity)} × ${f(c.rightSpeed)} × 0.15</code></p></div>
 <div class="cnf-balance"><span>流入近似<b data-readout="left-mass">${f(c.leftMass, 5)}</b></span><i aria-hidden="true">−</i><span>流出近似<b data-readout="right-mass">${f(c.rightMass, 5)}</b></span><i aria-hidden="true">=</i><span>净变化的一阶近似<b data-readout="delta-approx">${signed(c.deltaApprox, 5)}</b></span></div>
 <div class="cnf-step-limit"><div><span>真实有限时间变化率</span><code>[M(t+Δt) − M(t)] / Δt</code><b data-readout="finite-rate">${signed(c.finiteRate)}</b></div><span class="cnf-limit-arrow">Δt → 0<br>⟶</span><div><span>瞬时净通量</span><code>jₜ(a) − jₜ(b)</code><b data-readout="rate">${signed(c.rate)}</b></div></div>
 <p class="cnf-state" data-readout="state" aria-live="polite" aria-atomic="true">拖动小时间 Δt，观察差商如何趋近瞬时净通量。</p>
 <div class="cnf-proof"><p><strong>除以 Δt 并取极限，回到正文的积分守恒式</strong></p>${math(String.raw`\frac{d}{dt}\int_a^b p_t(x)\,dx=j_t(a)-j_t(b)`)}<p>同样的关系对<strong>任意固定区间</strong>都成立，在足够光滑的条件下便得到局部方程：</p>${math(String.raw`\partial_t p_t(x)+\partial_x\!\bigl(p_t(x)u_t(x)\bigr)=0`)}</div>
-<p class="cnf-note">数值例子：ψₜ(x₀) = (1+t)x₀ + 2t，X₀ ∼ N(0, 1)，uₜ(x) = (x+2)/(1+t)。真实区间质量 M(t) 按高斯密度积分计算。图中放大了两个边界附近，矩形宽度未作夸大；缩小 Δt 后会自然变窄。</p>${noScript}</figure>`;
+<p class="cnf-note">数值例子：ψₜ(x₀) = (1+t)x₀ + 2t，X₀ ∼ N(0, 1)，uₜ(x) = (x+2)/(1+t)。真实区间质量 M(t) 按高斯密度积分计算。图中放大了两个边界附近，矩形宽度未作夸大；缩小 Δt 后会自然变窄。</p></div></div>${noScript}</figure>`;
 
 const lossPlot = plots.loss;
 const optimumX = px(Math.log(2), lossPlot);

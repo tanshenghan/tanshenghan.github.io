@@ -173,6 +173,46 @@ for (const name of ["flow-visuals.css", "flow-visuals.js"]) assert.ok(article.in
 for (const id of ["cnf-affine-time", "cnf-continuity-time", "cnf-continuity-dt", "cnf-theta"]) assert.ok(article.includes(`id="${id}"`), `missing accessible control ${id}`);
 const continuityFigure = article.match(/<figure\b[^>]*\bdata-cnf-demo="continuity"[^>]*>([\s\S]*?)<\/figure>/)?.[1];
 assert.ok(continuityFigure, "the continuity illustration must be present");
+// Locate full subtrees rather than stopping at the first nested closing div.
+function elementByClass(html, className) {
+  const matches = [...html.matchAll(/<([a-z][a-z\d-]*)\b[^>]*>/gi)].filter((match) => {
+    const classes = match[0].match(/\bclass="([^"]*)"/)?.[1].split(/\s+/) ?? [];
+    return classes.includes(className);
+  });
+  assert.equal(matches.length, 1, `expected one ${className} element`);
+  const opening = matches[0];
+  const tags = new RegExp(`<\\/?${opening[1]}\\b[^>]*>`, "gi");
+  tags.lastIndex = opening.index;
+  let depth = 0;
+  for (let tag = tags.exec(html); tag; tag = tags.exec(html)) {
+    depth += tag[0].startsWith("</") ? -1 : 1;
+    if (depth === 0) {
+      return {
+        start: opening.index,
+        end: tags.lastIndex,
+        content: html.slice(opening.index + opening[0].length, tag.index),
+      };
+    }
+  }
+  assert.fail(`unclosed ${className} element`);
+}
+const continuityPanels = elementByClass(continuityFigure, "cnf-continuity-panels");
+const continuityVisual = elementByClass(continuityPanels.content, "cnf-continuity-visual");
+const continuityDetail = elementByClass(continuityPanels.content, "cnf-continuity-detail");
+assert.equal(continuityPanels.content.slice(0, continuityVisual.start).trim(), "", "the continuity chart must be the first panel");
+assert.equal(continuityPanels.content.slice(continuityVisual.end, continuityDetail.start).trim(), "", "continuity chart and explanation must be adjacent sibling panels");
+assert.equal(continuityPanels.content.slice(continuityDetail.end).trim(), "", "the continuity layout must contain only its chart and explanation panels");
+assert.match(continuityVisual.content, /<svg\b[^>]*\bcnf-flux-chart\b/, "the probability rectangle chart must remain in the left panel");
+assert.ok(continuityVisual.content.includes('class="cnf-legend"'), "the chart legend must remain with the chart");
+for (const id of ["cnf-continuity-time", "cnf-continuity-dt"]) {
+  assert.ok(continuityVisual.content.includes(`id="${id}"`), `${id} must remain with the left chart`);
+}
+for (const className of ["cnf-slab-factors", "cnf-balance", "cnf-step-limit", "cnf-state", "cnf-proof"]) {
+  elementByClass(continuityDetail.content, className);
+  assert.ok(!continuityVisual.content.includes(`class="${className}"`), `${className} must move from below the chart to the right panel`);
+}
+assert.ok(continuityDetail.content.includes("数值例子："), "the numeric model explanation must be included in the right panel");
+assert.ok(!/<(?:svg|input)\b/.test(continuityDetail.content), "the right derivation panel must not duplicate the chart or its controls");
 for (const side of ["left", "right"]) {
   assert.match(continuityFigure, new RegExp(`<rect\\b[^>]*class="cnf-slab ${side}"[^>]*data-part="${side}-slab"`), `missing ${side} first-order probability rectangle`);
 }
@@ -181,6 +221,7 @@ assert.ok(continuityFigure.includes("任意固定区间"), "the local continuity
 assert.ok(continuityFigure.includes("一阶近似") && continuityFigure.includes("精确穿越概率"), "the figure must distinguish rectangle approximations from exact finite-time crossing probabilities");
 for (const key of ["left-factors", "right-factors", "left-mass", "right-mass", "delta-approx", "finite-rate", "rate"]) {
   assert.ok(continuityFigure.includes(`data-readout="${key}"`), `missing continuity derivation readout ${key}`);
+  assert.ok(continuityDetail.content.includes(`data-readout="${key}"`), `continuity derivation readout ${key} must be in the right panel`);
 }
 const trainingFigure = article.match(/<figure\b[^>]*\bdata-cnf-demo="training"[^>]*>([\s\S]*?)<\/figure>/)?.[1];
 assert.ok(trainingFigure?.includes('class="cnf-training-panels"'), "training charts must share a side-by-side panel container");
@@ -189,6 +230,9 @@ for (const heading of ["training-density-heading", "training-loss-heading"]) {
   assert.ok(trainingFigure.includes(`id="${heading}"`), `missing named training panel ${heading}`);
 }
 const visualCss = fs.readFileSync(path.join(blogDir, "flow-visuals.css"), "utf8");
+assert.match(visualCss, /\.cnf-continuity-panels\s*\{[^}]*display:\s*grid[^}]*grid-template-columns:/, "continuity chart and derivation must use a desktop column grid");
+assert.match(visualCss, /\.cnf-continuity-panels\s*\{[^}]*grid-template-columns:\s*minmax\([^)]*\)\s+minmax\([^)]*\)/, "continuity desktop layout must declare two columns");
+assert.match(visualCss, /\.cnf-continuity-panels\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)\s*;/, "continuity layout must retain a single-column narrow-screen fallback");
 assert.match(visualCss, /\.cnf-training-panels\s*\{[^}]*display:\s*grid[^}]*grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)/, "training charts must use two equal columns at desktop widths");
 assert.match(visualCss, /\.cnf-slab\s*\{[^}]*fill:\s*var\(--blue\)/, "inflow rectangle must use the blue accent");
 assert.match(visualCss, /\.cnf-slab\.right\s*\{[^}]*fill:\s*var\(--outflow\)/, "outflow rectangle must use the distinct outflow accent");
@@ -242,6 +286,6 @@ for (const file of files) {
 }
 
 console.log(`PASS · ${checks} numerical comparisons; Gaussian mass and fixed-particle transport; continuity rectangles, exact crossing conservation and small-step limits; 100 decreasing gradient updates.`);
-console.log(`PASS · 3 generated pages; requested title; Gaussian drag figure and 3 analytic figures; continuity derivation and desktop training columns; unique IDs; ${localTargets.size} local files and assets.`);
+console.log(`PASS · 3 generated pages; requested title; Gaussian drag figure and 3 analytic figures; continuity chart/derivation sibling panels and desktop training columns; unique IDs; ${localTargets.size} local files and assets.`);
 console.log(`PASS · ${sourceFormulas.length} source formulas without trailing sentence periods; decimals and invisible delimiters preserved.`);
 console.log(`Site layout: ${siteDir}`);

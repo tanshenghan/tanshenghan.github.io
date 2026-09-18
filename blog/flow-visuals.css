@@ -90,7 +90,33 @@
 }
 @media (prefers-reduced-motion: reduce) { .cnf-actions button { transition: none; } }
 @media print { .cnf-controls, .cnf-actions { display: none; } .cnf-figure { break-inside: avoid; } }
-.cnf-continuity { --outflow: #ad642d; }
+.cnf-continuity { --outflow: #ad642d; container-type: inline-size; }
+.cnf-continuity-panels { display: grid; grid-template-columns: minmax(0, 1fr); margin-top: 20px; }
+.cnf-continuity-visual, .cnf-continuity-detail { min-width: 0; }
+@container (min-width: 680px) {
+  .cnf-continuity-panels { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+  .cnf-continuity-visual { position: sticky; top: 108px; }
+  .cnf-continuity-visual .cnf-legend { margin-top: 0; gap: 6px 12px; font-size: 10px; }
+  .cnf-continuity-visual .cnf-ticks, .cnf-continuity-visual .cnf-boundary-label { font-size: 18px; }
+  .cnf-continuity-visual .cnf-width-label, .cnf-continuity-visual .cnf-flux-label { font-size: 20px; }
+  .cnf-continuity-visual .cnf-flux-controls { padding-top: 12px; }
+  .cnf-continuity-visual .cnf-controls { gap: 10px; }
+  .cnf-continuity-visual .cnf-controls label { min-width: 72px; font-size: 11px; }
+  .cnf-continuity-detail { border-left: 1px solid var(--line); padding-left: 24px; }
+  .cnf-continuity-detail .cnf-slab-factors { border-top: 0; padding-top: 0; gap: 14px; }
+  .cnf-continuity-detail .cnf-slab-factors p { font-size: 11px; }
+  .cnf-continuity-detail .cnf-slab-factors code { font-size: 10px; white-space: nowrap; }
+  .cnf-continuity-detail .cnf-balance { gap: 3px; grid-template-columns: minmax(0,1fr) 10px minmax(0,1fr) 10px minmax(0,1fr); padding-block: 14px; }
+  .cnf-continuity-detail .cnf-balance span { font-size: 10px; }
+  .cnf-continuity-detail .cnf-balance b { font-size: 15px; }
+  .cnf-continuity-detail .cnf-step-limit { grid-template-columns: minmax(0,1fr) 40px minmax(0,1fr); gap: 5px; margin-top: 18px; }
+  .cnf-continuity-detail .cnf-step-limit div, .cnf-continuity-detail .cnf-step-limit code { font-size: 10px; }
+  .cnf-continuity-detail .cnf-step-limit b { font-size: 17px; }
+  .cnf-continuity-detail .cnf-limit-arrow { font-size: 10px; }
+  .cnf-continuity-detail .cnf-state, .cnf-continuity-detail .cnf-proof p { font-size: 11px; line-height: 1.85; }
+  .cnf-continuity-detail .cnf-proof { margin-top: 14px; padding-top: 4px; }
+  .cnf-continuity-detail .cnf-proof-equation { font-size: 12px; }
+}
 [data-theme="dark"] .cnf-continuity { --outflow: #e5ae72; }
 .cnf-continuity .cnf-curve { stroke: var(--muted); stroke-width: 1.6; stroke-dasharray: 5 4; }
 .cnf-continuity .cnf-interval { fill-opacity: .055; }
