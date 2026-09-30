@@ -6,7 +6,9 @@
 
 - `content/*.md`：文章正文，使用 Markdown 编写。
 - `posts.json`：文章标题、系列、地址、日期与简介。
+- `series.json`：各系列独立的简介、目录页导语和示意图类型。系列顺序沿用 `posts.json` 中首次出现的顺序。
 - `build-blog.mjs`：生成博客首页、系列目录、文章和数学公式。
+- `vln-catalog.mjs`：接入完整的 VLN HTML 调研目录，保留正文、实验表与搜索交互。
 - 本地 `docs/blog/blog.css` / 发布仓库 `blog/blog.css`：博客样式。
 - 本地 `docs/blog/blog.js` / 发布仓库 `blog/blog.js`：主题、阅读进度、目录和互动示意图。
 
@@ -38,7 +40,18 @@ npm test
 
 交互图由 `flow-visuals.mjs` 生成静态 SVG，浏览器逻辑与解析函数在 `blog/flow-visuals.js`，样式在 `blog/flow-visuals.css`。Markdown 使用 `<!-- affine-demo -->`、`<!-- continuity-demo -->`、`<!-- cnf-training-demo -->` 插入。构建和浏览器共用计算函数，部署时需同步这些文件。
 
-博客的 SVG 图示与交互示例是针对首篇 Flow 笔记设计的。新增其他系列时，可在构建脚本中调整系列简介与文章插图。
+博客的数学交互示例只用于 Flow 笔记。新增系列时，在 `series.json` 配置独立介绍；`art` 可选 `flow` 或 `navigation`，不要复用不相关的 Flow 介绍。
+
+## VLN Voyager · Part 01
+
+文章地址：`/blog/vln-voyager/agentic-vln/`，显示标题为「Agentic VLN」。
+
+- 原始 HTML 快照保存在 `content/agentic-vln/vln-paper-catalog.html`，本地框架图保存在同目录 `pic/` 下；构建和发布不依赖工作区之外的原文件。
+- `posts.json` 使用 `format: "catalog"`，由独立导入器生成页面，不走 Flow 的 Markdown／公式模板。用 `readingLabel` 显示「67 篇论文 · 可检索文献笔记」，而非整页预计阅读分钟。
+- 保留 67 篇论文、137 条实验结果、来源说明、搜索筛选与侧边目录；图片保持原始出处，本地图随站点发布。远程图片保留加载失败提示。
+- 原文件引用的 CSV、Markdown、JSON 附件并未提供，发布页面不显示这些失效下载入口。
+- 如需更新此篇，替换快照和相关本地资源后重新构建并运行测试。导入器会检查脚本安全；若原目录的交互代码发生变化，需要先审查代码再更新导入规则。
+- `test-vln-blog.mjs` 检查系列顺序、论文与实验内容完整性、本地资源、锚点及导航；原有 `test-blog.mjs` 继续保护 Flow 文章与数学交互。
 
 ## 本地预览与发布
 

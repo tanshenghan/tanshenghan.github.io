@@ -5,6 +5,7 @@ import { marked } from "marked";
 import katex from "katex";
 import { cnfVisuals } from "./flow-visuals.mjs";
 import { gaussianDemo } from "./gaussian-demo.mjs";
+import { buildVlnCatalog } from "./vln-catalog.mjs";
 
 const toolsDir = path.dirname(fileURLToPath(import.meta.url));
 // Support both the local docs/ workspace and the root-based GitHub Pages repo.
@@ -13,6 +14,7 @@ const siteDir = process.env.SITE_OUTPUT_DIR
   : path.resolve(toolsDir, fs.existsSync(path.resolve(toolsDir, "../docs/index.html")) ? "../docs" : "..");
 const outputDir = path.join(siteDir, "blog");
 const posts = JSON.parse(fs.readFileSync(path.join(toolsDir, "posts.json"), "utf8"));
+const seriesMetadata = JSON.parse(fs.readFileSync(path.join(toolsDir, "series.json"), "utf8"));
 const version = "20260918-continuity-columns-4";
 const escape = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 const formula = (tex, displayMode = false) => katex.renderToString(tex, { displayMode, throwOnError: true, output: "htmlAndMathml", strict: "error" });
@@ -37,6 +39,11 @@ function header(home, blog, isArticle) {
   return '<a class="skip" href="#main">跳至正文</a><header class="blog-header"><div class="header-inner"><a class="blog-brand" href="' + home + '"><span class="seal" aria-hidden="true"></span><span>谭圣涵<small>SHENGHAN TAN</small></span></a><nav aria-label="站点导航"><a href="' + home + '">主页</a><a class="nav-current" href="' + blog + '" aria-current="' + (isArticle ? "false" : "page") + '">BLOG</a><button class="blog-theme" type="button" aria-label="切换深浅色主题" aria-pressed="false"><span aria-hidden="true">◐</span></button></nav></div></header><div class="reading-progress" aria-hidden="true"><span></span></div>';
 }
 
+function seriesArt(slug) {
+  if (seriesMetadata[slug]?.art !== "navigation") return flowArt();
+  return '<svg class="flow-art" viewBox="0 0 540 230" role="img" aria-label="导航闭环：观察环境、更新记忆、规划路径、执行行动，再返回观察"><g fill="none" stroke="var(--line)" stroke-width="1"><path d="M30 38H510M30 78H510M30 118H510M30 158H510M30 198H510M70 20V210M170 20V210M270 20V210M370 20V210M470 20V210" /></g><path d="M70 138L180 138L290 78L440 78" fill="none" stroke="var(--blue)" stroke-width="2.4" /><path d="M440 78V178H70V138" fill="none" stroke="var(--blue)" stroke-width="1.2" stroke-dasharray="4 5" opacity=".55" /><path d="M82 170L70 178L82 186" fill="none" stroke="var(--blue)" stroke-width="1.5" /><g fill="var(--surface)" stroke="var(--blue)" stroke-width="2"><circle cx="70" cy="138" r="6" /><circle cx="180" cy="138" r="6" /><circle cx="290" cy="78" r="6" /><circle cx="440" cy="78" r="6" /></g><g class="flow-labels" style="font-size:10px"><text x="40" y="116">OBSERVE</text><text x="158" y="116">MEMORY</text><text x="277" y="56">PLAN</text><text x="428" y="56">ACT</text><text x="204" y="201">FEEDBACK → NEXT STEP</text></g></svg>';
+}
+
 function shell({ title, description, relative, body, canonical, article = false }) {
   return '<!doctype html>\n<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="' + escape(description) + '"><meta name="theme-color" content="#f8f9fb"><meta property="og:type" content="' + (article ? "article" : "website") + '"><meta property="og:title" content="' + escape(title) + '"><meta property="og:description" content="' + escape(description) + '"><link rel="canonical" href="https://tanshenghan.github.io/blog/' + canonical + '"><title>' + escape(title) + ' · 谭圣涵</title><link rel="stylesheet" href="' + relative + 'vendor/katex/katex.min.css"><link rel="stylesheet" href="' + relative + 'blog.css?v=' + version + '"><script src="' + relative + 'blog.js?v=' + version + '" defer></script>' + (article ? '<link rel="stylesheet" href="' + relative + 'flow-visuals.css?v=' + version + '"><script src="' + relative + 'flow-visuals.js?v=' + version + '" defer></script><script src="' + relative + 'gaussian-demo.js?v=' + version + '" defer></script>' : '') + '</head><body>' +
     header(relative + "../", relative || "./", article) + body +
@@ -44,13 +51,14 @@ function shell({ title, description, relative, body, canonical, article = false 
 }
 
 function teaser(post, prefix) {
-  return '<a class="post-row" href="' + prefix + articlePath(post) + '"><span class="post-number">' + post.number + '</span><div><div class="post-meta">' + post.date.replaceAll("-", ".") + ' <span>·</span> ' + post.minutes + ' 分钟阅读</div><h3>' + escape(post.title) + '</h3><p>' + escape(post.description) + '</p><span class="post-tags">' + post.tags.map(escape).join(" / ") + '</span></div><span class="post-arrow" aria-hidden="true">↗</span></a>';
+  const reading = post.readingLabel ? escape(post.readingLabel) : post.minutes + ' 分钟阅读';
+  return '<a class="post-row" href="' + prefix + articlePath(post) + '"><span class="post-number">' + post.number + '</span><div><div class="post-meta">' + post.date.replaceAll("-", ".") + ' <span>·</span> ' + reading + '</div><h3>' + escape(post.title) + '</h3><p>' + escape(post.description) + '</p><span class="post-tags">' + post.tags.map(escape).join(" / ") + '</span></div><span class="post-arrow" aria-hidden="true">↗</span></a>';
 }
 
 const series = [...new Set(posts.map((p) => p.seriesSlug))];
 const indexBody = '<main id="main" class="index-shell"><div id="top"></div><section class="index-hero"><div><p class="eyebrow">NOTES ON LEARNING & BUILDING</p><h1>BLOG<span class="blue-dot">.</span></h1><p class="index-intro">把理解写下来，<br>让问题继续向前。</p><p class="index-description">关于生成模型、具身智能与研究实践的技术笔记。</p></div><div class="index-art">' + flowArt() + '<span>IDEAS IN MOTION</span></div></section><section class="index-series"><div class="listing-heading"><h2>按系列阅读</h2><span>' + series.length + ' 个系列 / ' + posts.length + ' 篇笔记</span></div>' + series.map((slug) => {
   const list = posts.filter((p) => p.seriesSlug === slug);
-  return '<div class="series-line"><div><span class="eyebrow">SERIES ' + String(series.indexOf(slug) + 1).padStart(2, "0") + '</span><h2><a href="' + slug + '/">' + escape(list[0].series) + ' <span aria-hidden="true">↗</span></a></h2><p>从概率运输与连续动力学出发，逐步理解 Flow Matching。</p></div><span class="series-count">' + list.length + ' 篇</span></div>' + list.map((p) => teaser(p, "")).join("");
+  return '<div class="series-line"><div><span class="eyebrow">SERIES ' + String(series.indexOf(slug) + 1).padStart(2, "0") + '</span><h2><a href="' + slug + '/">' + escape(list[0].series) + ' <span aria-hidden="true">↗</span></a></h2><p>' + escape(seriesMetadata[slug].description) + '</p></div><span class="series-count">' + list.length + ' 篇</span></div>' + list.map((p) => teaser(p, "")).join("");
 }).join("") + '</section></main>';
 fs.writeFileSync(path.join(outputDir, "index.html"), shell({ title: "BLOG · 技术博客", description: "谭圣涵的技术博客：生成模型、具身智能与研究实践。", relative: "", body: indexBody, canonical: "" }));
 
@@ -58,8 +66,8 @@ for (const slug of series) {
   const list = posts.filter((p) => p.seriesSlug === slug);
   const dir = path.join(outputDir, slug);
   fs.mkdirSync(dir, { recursive: true });
-  const body = '<main id="main" class="index-shell"><div id="top"></div><nav class="breadcrumbs" aria-label="面包屑"><a href="../">BLOG</a><span>/</span><span>' + escape(list[0].series) + '</span></nav><section class="series-hero"><p class="eyebrow">A LEARNING JOURNEY · ' + list.length + ' NOTE</p><h1>' + escape(list[0].series) + '</h1><p>从随机变量出发，走向连续的概率运输。</p>' + flowArt() + '</section><section aria-label="系列文章"><div class="listing-heading"><h2>阅读目录</h2><span>按篇章展开</span></div>' + list.map((p) => teaser(p, "../")).join("") + '</section></main>';
-  fs.writeFileSync(path.join(dir, "index.html"), shell({ title: list[0].series, description: "从概率运输与 ODE flow 开始的 Flow Matching 学习笔记。", relative: "../", body, canonical: slug + "/" }));
+  const body = '<main id="main" class="index-shell"><div id="top"></div><nav class="breadcrumbs" aria-label="面包屑"><a href="../">BLOG</a><span>/</span><span>' + escape(list[0].series) + '</span></nav><section class="series-hero"><p class="eyebrow">A LEARNING JOURNEY · ' + list.length + ' NOTE</p><h1>' + escape(list[0].series) + '</h1><p>' + escape(seriesMetadata[slug].intro) + '</p>' + seriesArt(slug) + '</section><section aria-label="系列文章"><div class="listing-heading"><h2>阅读目录</h2><span>按篇章展开</span></div>' + list.map((p) => teaser(p, "../")).join("") + '</section></main>';
+  fs.writeFileSync(path.join(dir, "index.html"), shell({ title: list[0].series, description: seriesMetadata[slug].metaDescription, relative: "../", body, canonical: slug + "/" }));
 }
 
 const demo = gaussianDemo;
@@ -67,6 +75,16 @@ const strip = '<figure class="concept-strip"><div><span>01 / VELOCITY</span><str
 const actionDiagram = '<figure class="action-diagram"><div class="condition-row"><span>图像</span><span>语言指令</span><span>机器人状态</span><b>固定条件 c ↓</b></div><div class="action-flow"><div><small>NOISE</small><strong>A₀</strong><span>112 维</span></div><p>条件速度场 uθ<br><span>→ ODE 积分 →</span></p><div><small>ACTION CHUNK</small><strong>A₁</strong><span>16 步 × 7 维</span></div></div><figcaption>被运输的是整个动作块；条件负责影响它如何移动。</figcaption></figure>';
 
 for (const post of posts) {
+  if (post.format === "catalog") {
+    const result = buildVlnCatalog({
+      sourcePath: path.join(toolsDir, "content", post.source),
+      outputDir: path.join(outputDir, articlePath(post)),
+      post,
+      headerHtml: header("../../../", "../../", true),
+    });
+    console.log("Built:", articlePath(post), "— imported catalog", result);
+    continue;
+  }
   const math = [];
   let source = fs.readFileSync(path.join(toolsDir, "content", post.source), "utf8");
   source = source.replace(/\$\$([\s\S]+?)\$\$|\$([^$\n]+?)\$/g, (_, block, inline) => {

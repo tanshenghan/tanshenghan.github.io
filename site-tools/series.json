@@ -1,0 +1,14 @@
+{
+  "flow-matching": {
+    "description": "从概率运输与连续动力学出发，逐步理解 Flow Matching。",
+    "intro": "从随机变量出发，走向连续的概率运输。",
+    "metaDescription": "从概率运输与 ODE flow 开始的 Flow Matching 学习笔记。",
+    "art": "flow"
+  },
+  "vln-voyager": {
+    "description": "从 Agentic VLN 出发，探索具身导航中的规划、记忆、工具调用与执行反馈。",
+    "intro": "把导航看作一个持续观察、记忆、决策与行动的过程。",
+    "metaDescription": "VLN Voyager：视觉语言导航与具身智能的技术笔记，从 Agentic VLN 的论文、设计哲学和实验对照开始。",
+    "art": "navigation"
+  }
+}

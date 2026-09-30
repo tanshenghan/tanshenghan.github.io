@@ -13,5 +13,20 @@
     "tags": ["Flow", "Velocity Field", "连续性方程", "CNF"],
     "source": "flow-foundations.md",
     "minutes": 32
+  },
+  {
+    "title": "Agentic VLN",
+    "author": "shong Tan",
+    "slug": "agentic-vln",
+    "series": "VLN Voyager",
+    "seriesSlug": "vln-voyager",
+    "number": "01",
+    "date": "2026-09-30",
+    "description": "从 67 篇 Train-free / Agentic VLN 论文出发，梳理规划、记忆、工具与执行反馈的设计哲学，结合 137 条实验结果理解不同方法的能力与边界。支持全文搜索、分组筛选与逐篇阅读。",
+    "subtitle": "导航智能体的设计哲学、系统机制与实验对照。",
+    "tags": ["Agentic VLN", "Train-free", "Memory", "Planning"],
+    "format": "catalog",
+    "source": "agentic-vln/vln-paper-catalog.html",
+    "readingLabel": "67 篇论文 · 可检索文献笔记"
   }
 ]
