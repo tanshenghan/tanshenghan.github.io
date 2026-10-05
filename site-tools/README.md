@@ -40,7 +40,7 @@ npm test
 
 交互图由 `flow-visuals.mjs` 生成静态 SVG，浏览器逻辑与解析函数在 `blog/flow-visuals.js`，样式在 `blog/flow-visuals.css`。Markdown 使用 `<!-- affine-demo -->`、`<!-- continuity-demo -->`、`<!-- cnf-training-demo -->` 插入。构建和浏览器共用计算函数，部署时需同步这些文件。
 
-博客的数学交互示例只用于 Flow 笔记。新增系列时，在 `series.json` 配置独立介绍；`art` 可选 `flow` 或 `navigation`，不要复用不相关的 Flow 介绍。
+博客的数学交互示例只用于 Flow 笔记。新增系列时，在 `series.json` 配置独立介绍；`art` 可选 `flow`、`navigation` 或 `none`，不要复用不相关的 Flow 介绍。
 
 ## VLN Voyager · Part 01
 
@@ -54,6 +54,17 @@ npm test
 - `test-vln-blog.mjs` 检查系列顺序、论文与实验内容完整性、本地资源、锚点及导航；原有 `test-blog.mjs` 继续保护 Flow 文章与数学交互。
 
 ## 本地预览与发布
+
+### 套牢研究 · 宝丰能源分析
+
+系列地址：`/blog/taolao-research/`；首篇文章：`/blog/taolao-research/baofeng-energy/`。
+
+- 原始单文件报告快照位于 `content/baofeng-energy/report.html`，无需依赖 Downloads 目录。
+- `posts.json` 使用 `format: "standalone-report"`；`standalone-report.mjs` 保留原始样式、数据、模型脚本与来源链接，仅更新文章标题并增加 BLOG／系列／个人主页导航。
+- 保留原报告研究日期及数据口径，不抓取实时行情、不改写数据或投资判断；情景测算不是公司预测或投资建议。
+- 更新报告时替换快照并构建；若交互脚本变化，需要先审查再更新导入器中的 SHA-256 白名单。`test-stock-blog.mjs` 检查内容和交互脚本是否保持一致、目录顺序与导航是否有效。
+
+### 预览与发布方式
 
 在本地大工作区根目录运行 `python3 -m http.server 4173 --directory docs`；在独立 GitHub Pages 仓库根目录运行 `python3 -m http.server 4173`。
 打开 `http://localhost:4173/blog/`。构建无需在 GitHub 上运行，提交生成后的 HTML、CSS、JS、字体和源码即可。

@@ -6,6 +6,7 @@ import katex from "katex";
 import { cnfVisuals } from "./flow-visuals.mjs";
 import { gaussianDemo } from "./gaussian-demo.mjs";
 import { buildVlnCatalog } from "./vln-catalog.mjs";
+import { buildStandaloneReport } from "./standalone-report.mjs";
 
 const toolsDir = path.dirname(fileURLToPath(import.meta.url));
 // Support both the local docs/ workspace and the root-based GitHub Pages repo.
@@ -40,6 +41,7 @@ function header(home, blog, isArticle) {
 }
 
 function seriesArt(slug) {
+  if (seriesMetadata[slug]?.art === "none") return "";
   if (seriesMetadata[slug]?.art !== "navigation") return flowArt();
   return '<svg class="flow-art" viewBox="0 0 540 230" role="img" aria-label="导航闭环：观察环境、更新记忆、规划路径、执行行动，再返回观察"><g fill="none" stroke="var(--line)" stroke-width="1"><path d="M30 38H510M30 78H510M30 118H510M30 158H510M30 198H510M70 20V210M170 20V210M270 20V210M370 20V210M470 20V210" /></g><path d="M70 138L180 138L290 78L440 78" fill="none" stroke="var(--blue)" stroke-width="2.4" /><path d="M440 78V178H70V138" fill="none" stroke="var(--blue)" stroke-width="1.2" stroke-dasharray="4 5" opacity=".55" /><path d="M82 170L70 178L82 186" fill="none" stroke="var(--blue)" stroke-width="1.5" /><g fill="var(--surface)" stroke="var(--blue)" stroke-width="2"><circle cx="70" cy="138" r="6" /><circle cx="180" cy="138" r="6" /><circle cx="290" cy="78" r="6" /><circle cx="440" cy="78" r="6" /></g><g class="flow-labels" style="font-size:10px"><text x="40" y="116">OBSERVE</text><text x="158" y="116">MEMORY</text><text x="277" y="56">PLAN</text><text x="428" y="56">ACT</text><text x="204" y="201">FEEDBACK → NEXT STEP</text></g></svg>';
 }
@@ -56,11 +58,11 @@ function teaser(post, prefix) {
 }
 
 const series = [...new Set(posts.map((p) => p.seriesSlug))];
-const indexBody = '<main id="main" class="index-shell"><div id="top"></div><section class="index-hero"><div><p class="eyebrow">NOTES ON LEARNING & BUILDING</p><h1>BLOG<span class="blue-dot">.</span></h1><p class="index-intro">把理解写下来，<br>让问题继续向前。</p><p class="index-description">关于生成模型、具身智能与研究实践的技术笔记。</p></div><div class="index-art">' + flowArt() + '<span>IDEAS IN MOTION</span></div></section><section class="index-series"><div class="listing-heading"><h2>按系列阅读</h2><span>' + series.length + ' 个系列 / ' + posts.length + ' 篇笔记</span></div>' + series.map((slug) => {
+const indexBody = '<main id="main" class="index-shell"><div id="top"></div><section class="index-hero"><div><p class="eyebrow">NOTES ON LEARNING & BUILDING</p><h1>BLOG<span class="blue-dot">.</span></h1><p class="index-intro">把理解写下来，<br>让问题继续向前。</p><p class="index-description">关于生成模型、具身智能与企业分析的研究笔记。</p></div><div class="index-art">' + flowArt() + '<span>IDEAS IN MOTION</span></div></section><section class="index-series"><div class="listing-heading"><h2>按系列阅读</h2><span>' + series.length + ' 个系列 / ' + posts.length + ' 篇笔记</span></div>' + series.map((slug) => {
   const list = posts.filter((p) => p.seriesSlug === slug);
   return '<div class="series-line"><div><span class="eyebrow">SERIES ' + String(series.indexOf(slug) + 1).padStart(2, "0") + '</span><h2><a href="' + slug + '/">' + escape(list[0].series) + ' <span aria-hidden="true">↗</span></a></h2><p>' + escape(seriesMetadata[slug].description) + '</p></div><span class="series-count">' + list.length + ' 篇</span></div>' + list.map((p) => teaser(p, "")).join("");
 }).join("") + '</section></main>';
-fs.writeFileSync(path.join(outputDir, "index.html"), shell({ title: "BLOG · 技术博客", description: "谭圣涵的技术博客：生成模型、具身智能与研究实践。", relative: "", body: indexBody, canonical: "" }));
+fs.writeFileSync(path.join(outputDir, "index.html"), shell({ title: "BLOG · 研究笔记", description: "谭圣涵的博客：生成模型、具身智能与企业分析的研究笔记。", relative: "", body: indexBody, canonical: "" }));
 
 for (const slug of series) {
   const list = posts.filter((p) => p.seriesSlug === slug);
@@ -75,6 +77,15 @@ const strip = '<figure class="concept-strip"><div><span>01 / VELOCITY</span><str
 const actionDiagram = '<figure class="action-diagram"><div class="condition-row"><span>图像</span><span>语言指令</span><span>机器人状态</span><b>固定条件 c ↓</b></div><div class="action-flow"><div><small>NOISE</small><strong>A₀</strong><span>112 维</span></div><p>条件速度场 uθ<br><span>→ ODE 积分 →</span></p><div><small>ACTION CHUNK</small><strong>A₁</strong><span>16 步 × 7 维</span></div></div><figcaption>被运输的是整个动作块；条件负责影响它如何移动。</figcaption></figure>';
 
 for (const post of posts) {
+  if (post.format === "standalone-report") {
+    const result = buildStandaloneReport({
+      sourcePath: path.join(toolsDir, "content", post.source),
+      outputDir: path.join(outputDir, articlePath(post)),
+      post,
+    });
+    console.log("Built:", articlePath(post), "— imported report", result);
+    continue;
+  }
   if (post.format === "catalog") {
     const result = buildVlnCatalog({
       sourcePath: path.join(toolsDir, "content", post.source),

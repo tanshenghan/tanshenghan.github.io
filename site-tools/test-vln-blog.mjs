@@ -76,9 +76,8 @@ function ids(html, label) {
 }
 
 const seriesOrder = [...new Set(posts.map((entry) => entry.seriesSlug))];
-assert.deepEqual(seriesOrder, ["flow-matching", "vln-voyager"], "Flow matching must precede VLN Voyager");
-assert.equal(posts.length, 2, "the blog currently contains exactly two articles");
-assert.match(textContent(index), /2 个系列\s*\/\s*2 篇笔记/, "index totals must include both series and articles");
+assert.deepEqual(seriesOrder.slice(0, 2), ["flow-matching", "vln-voyager"], "Flow matching and VLN Voyager must remain the first two series");
+assert.ok(textContent(index).includes(`${seriesOrder.length} 个系列 / ${posts.length} 篇笔记`), "index totals must match all registered series and articles");
 assert.ok(index.indexOf('href="flow-matching/"') < index.indexOf('href="vln-voyager/"'), "visible series order must match metadata");
 assert.ok(links(index).includes("vln-voyager/"), "blog index must link to the new series");
 assert.ok(links(index).includes("vln-voyager/agentic-vln/"), "blog index must link directly to Part 01");
@@ -184,4 +183,4 @@ for (const controlId of ["search", "collection", "result-search", "benchmark", "
   assert.ok(readIds(articleFile).has(controlId), `interactive control ${controlId} must remain available`);
 }
 
-console.log(`VLN blog checks passed: 2 ordered series, 2 articles, 67 complete papers, 137 result rows, 67 attributed figures, ${checkedResources} local resources/anchors.`);
+console.log(`VLN blog checks passed: ${seriesOrder.length} ordered series, ${posts.length} articles, 67 complete papers, 137 result rows, 67 attributed figures, ${checkedResources} local resources/anchors.`);

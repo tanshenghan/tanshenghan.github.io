@@ -10,5 +10,11 @@
     "intro": "把导航看作一个持续观察、记忆、决策与行动的过程。",
     "metaDescription": "VLN Voyager：视觉语言导航与具身智能的技术笔记，从 Agentic VLN 的论文、设计哲学和实验对照开始。",
     "art": "navigation"
+  },
+  "taolao-research": {
+    "description": "围绕企业经营、财报与情景模型，记录分析过程和风险边界。",
+    "intro": "从业务出发，用财报与模型检验自己的判断。",
+    "metaDescription": "套牢研究：关于企业经营、财务结构与情景分析的研究笔记。首篇为宝丰能源分析。",
+    "art": "none"
   }
 }

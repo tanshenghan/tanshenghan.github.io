@@ -28,5 +28,20 @@
     "format": "catalog",
     "source": "agentic-vln/vln-paper-catalog.html",
     "readingLabel": "67 篇论文 · 可检索文献笔记"
+  },
+  {
+    "title": "宝丰能源分析",
+    "author": "shong Tan",
+    "slug": "baofeng-energy",
+    "series": "套牢研究",
+    "seriesSlug": "taolao-research",
+    "number": "01",
+    "date": "2026-10-05",
+    "description": "从产品结构和一体化生产链出发，结合财务、债务与现金流，理解宝丰能源的经营逻辑。附可调整的利润情景模型、历史数据对照和来源说明。",
+    "subtitle": "产品、资本与利润的关系。",
+    "tags": ["宝丰能源", "财报分析", "煤化工", "利润模型"],
+    "format": "standalone-report",
+    "source": "baofeng-energy/report.html",
+    "readingLabel": "企业分析 · 交互研究报告"
   }
 ]
