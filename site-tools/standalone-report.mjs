@@ -11,6 +11,7 @@ const escape = (value) => String(value).replace(/[&<>"']/g, (c) => ({
 // source changes; data/content updates alone do not require a runtime change.
 const reviewedScripts = new Set([
   "a65ce0933767cf32083dd714d355dcdf51025c153e53441f964e7fac0cda1b5e",
+  "550c79df456d51af283959c0b1bca71a78b6bb6c905fcfe46e61d81ab76aa325",
 ]);
 
 export function buildStandaloneReport({ sourcePath, outputDir, post }) {
@@ -35,9 +36,12 @@ export function buildStandaloneReport({ sourcePath, outputDir, post }) {
     return html.replace(pattern, replacement);
   };
   const canonical = `https://tanshenghan.github.io/blog/${post.seriesSlug}/${post.slug}/`;
-  let html = replaceOnce(source, /<title>[^<]*<\/title>/,
-    `<title>${escape(post.title)} · ${escape(post.series)} · shong Tan</title>`, "document title");
-  html = replaceOnce(html, /<h1>[^<]*(?=<small>)/,
+  // Scope the document title to head; chart templates can contain SVG titles.
+  const headEnd = source.indexOf("</head>");
+  assert.ok(headEnd > 0, "Report must contain a document head");
+  let html = replaceOnce(source.slice(0, headEnd), /<title>[^<]*<\/title>/,
+    `<title>${escape(post.title)} · ${escape(post.series)} · shong Tan</title>`, "document title") + source.slice(headEnd);
+  html = replaceOnce(html, /<h1>[^<]*(?=<small>|<br>)/,
     `<h1>${escape(post.title)}`, "report heading");
   html = replaceOnce(html, /<\/head>/, `<link rel="canonical" href="${canonical}">
 <meta property="og:type" content="article">
@@ -52,8 +56,8 @@ export function buildStandaloneReport({ sourcePath, outputDir, post }) {
 @media(max-width:600px){.blog-context{font-size:11px;gap:5px 9px;margin-bottom:20px}.blog-context a{min-height:40px}}
 @media print{.blog-context{display:none}}
 </style></head>`, "head closing tag");
-  html = replaceOnce(html, /<main class="main" id="main">/,
-    `<main class="main" id="main"><nav class="blog-context" aria-label="博客导航"><a href="../../">BLOG</a><span aria-hidden="true">/</span><a href="../">${escape(post.series)}</a><span aria-hidden="true">/</span><span aria-current="page">${escape(post.title)}</span><a class="blog-home" href="../../../">个人主页 ↗</a></nav>`, "main report container");
+  html = replaceOnce(html, /<main(?: class="main" id="main")?>/,
+    (main) => `${main}<nav class="blog-context" aria-label="博客导航"><a href="../../">BLOG</a><span aria-hidden="true">/</span><a href="../">${escape(post.series)}</a><span aria-hidden="true">/</span><span aria-current="page">${escape(post.title)}</span><a class="blog-home" href="../../../">个人主页 ↗</a></nav>`, "main report container");
   fs.mkdirSync(outputDir, { recursive: true });
   fs.writeFileSync(path.join(outputDir, "index.html"), html);
   return { scripts: scriptCount, bytes: Buffer.byteLength(html) };

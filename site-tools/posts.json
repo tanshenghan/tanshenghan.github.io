@@ -43,5 +43,20 @@
     "format": "standalone-report",
     "source": "baofeng-energy/report.html",
     "readingLabel": "企业分析 · 交互研究报告"
+  },
+  {
+    "title": "顺丰控股分析",
+    "author": "shong Tan",
+    "slug": "sf-holding",
+    "series": "套牢研究",
+    "seriesSlug": "taolao-research",
+    "number": "02",
+    "date": "2026-10-06",
+    "description": "沿着业务结构、盈利与资本回报，回看顺丰控股 2016—2025 年十年财务，并单列 2026 年半年报。附业务与财务交互图表、分部利润、现金流及债务分析。",
+    "subtitle": "十年业务与财务观察。",
+    "tags": ["顺丰控股", "物流", "财报分析", "现金流与债务"],
+    "format": "standalone-report",
+    "source": "sf-holding/report.html",
+    "readingLabel": "十年财务 · 交互研究报告"
   }
 ]

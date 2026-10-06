@@ -66,6 +66,8 @@ npm test
 
 ### 预览与发布方式
 
+“套牢研究”第二篇为「顺丰控股分析」，地址 `/blog/taolao-research/sf-holding/`。原始单文件快照为 `content/sf-holding/report.html`，同样使用 `standalone-report` 导入，保留十年财务、业务图表、分部利润与数据导出。只更新博客标题和返回导航，不改写原始财务内容；测试同时保护宝丰能源与顺丰两篇报告。
+
 在本地大工作区根目录运行 `python3 -m http.server 4173 --directory docs`；在独立 GitHub Pages 仓库根目录运行 `python3 -m http.server 4173`。
 打开 `http://localhost:4173/blog/`。构建无需在 GitHub 上运行，提交生成后的 HTML、CSS、JS、字体和源码即可。
 

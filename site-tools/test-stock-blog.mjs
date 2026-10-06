@@ -86,9 +86,9 @@ function contextBlock(html) {
 
 const order = [...new Set(posts.map((entry) => entry.seriesSlug))];
 assert.deepEqual(order, ["flow-matching", "vln-voyager", "taolao-research"], "existing series must remain ahead of 套牢研究");
-assert.equal(posts.length, 3, "the blog must contain three registered articles after this import");
-assert.equal(posts.filter((entry) => entry.seriesSlug === post.seriesSlug).length, 1, "宝丰能源分析 must be the first article in its series");
-assert.match(textContent(index), /3 个系列\s*\/\s*3 篇笔记/, "index totals must include the new series and article");
+const stockPosts = posts.filter((entry) => entry.seriesSlug === post.seriesSlug);
+assert.deepEqual(stockPosts.slice(0, 2).map(p => [p.slug, p.number]), [["baofeng-energy", "01"], ["sf-holding", "02"]], "宝丰能源 and 顺丰控股 must remain the first two chapters");
+assert.ok(textContent(index).includes(`${order.length} 个系列 / ${posts.length} 篇笔记`), "index totals must match the registered articles");
 order.forEach((slug, i) => {
   assert.ok(links(index).includes(`${slug}/`), `index must link to ${slug}`);
   if (i) assert.ok(index.indexOf(`href="${order[i - 1]}/"`) < index.indexOf(`href="${slug}/"`), "visible series order must match metadata");
@@ -186,4 +186,32 @@ for (const controlId of ["print-report", "product-select", "metric-select", "dow
 }
 assert.equal(openingTags(article).filter((entry) => ["img", "iframe", "object", "embed"].includes(entry.name)).length, 0, "this report requires no separately copied embedded media");
 assert.ok(articleScripts.every((entry) => !entry.attrs.src), "the standalone report must not require remote JavaScript");
-console.log(`Stock blog checks passed: 3 ordered series, 3 articles, 5 complete report sections, original data/scripts/styles preserved, ${checkedReferences} local resources/anchors.`);
+const sfPost = stockPosts.find(p => p.slug === "sf-holding");
+assert.equal(sfPost.title, "顺丰控股分析");
+assert.equal(sfPost.format, "standalone-report");
+const sfFile = path.join(blogDir, sfPost.seriesSlug, sfPost.slug, "index.html");
+const sfSource = fs.readFileSync(path.join(toolsDir, "content", sfPost.source), "utf8");
+const sfArticle = fs.readFileSync(sfFile, "utf8");
+htmlCache.set(sfFile, sfArticle);
+const sfContext = contextBlock(sfArticle);
+assert.equal(financialBody(sfArticle, sfContext), financialBody(sfSource), "SF report body must be unchanged except the heading/navigation");
+assert.deepEqual(blocks(sfArticle, "script"), blocks(sfSource, "script"), "SF data and runtime must be preserved verbatim");
+assert.deepEqual(blocks(sfArticle, "style").filter(s => !s.content.includes(".blog-context")), blocks(sfSource, "style"), "SF original styles must be preserved");
+assert.match(sfArticle, /<title>顺丰控股分析 · 套牢研究/);
+assert.match(sfArticle, /<h1>顺丰控股分析<br>十年业务与财务观察<\/h1>/);
+assert.ok(links(index).includes("taolao-research/sf-holding/"));
+assert.ok(links(series).includes("../taolao-research/sf-holding/"));
+assert.ok(series.indexOf('href="../taolao-research/baofeng-energy/"') < series.indexOf('href="../taolao-research/sf-holding/"'));
+assert.deepEqual(sectionIds(sfArticle), sectionIds(sfSource));
+for (const href of ["../../../", "../../", "../"]) assert.ok(links(sfContext.markup).includes(href));
+assert.doesNotMatch(sfArticle, /file:\/\/|\/Users\/|\/private\/|localhost|127\.0\.0\.1/i);
+readIds(sfFile);
+for (const tag of openingTags(sfArticle)) {
+  for (const name of ["href", "src", "data-src"]) if (tag.attrs[name]) checkLocalReference(tag.attrs[name], sfFile);
+}
+for (const s of blocks(sfArticle, "script")) {
+  if (s.attrs.type === "application/json") JSON.parse(s.content);
+  else new vm.Script(s.content);
+}
+for (const id of ["business-period", "business-category", "finance-metric", "finance-transform", "profit-period", "profit-category", "download-finance", "download-business", "download-all"]) assert.ok(readIds(sfFile).has(id), `${id}: SF interaction preserved`);
+console.log(`Stock blog checks passed: ${order.length} series, ${posts.length} articles; Baofeng and SF report bodies/data/scripts/styles preserved; ${checkedReferences} local resources/anchors.`);
