@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="1030" viewBox="0 0 880 1030" role="img" aria-labelledby="title desc">
+  <title id="title">AgenticNav 工具调用闭环</title>
+  <desc id="desc">从上到下：输入指令、当前 RGB 与地图，进入 VLM 推理。模型按需查询深度或召回图像，反馈后继续推理；也可提交像素目标，通过几何与安全检查后执行，更新观察与地图并进入下一轮。检查失败返回 Reselect 重新推理。模型调用 stop 时结束 episode。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#39735f"/></marker>
+    <style>
+      text{font-family:system-ui,-apple-system,"Segoe UI","Noto Sans CJK SC",sans-serif;fill:#203832;text-anchor:middle}
+      .heading{font-size:24px;font-weight:700}.label{font-size:18px;font-weight:650}.sub{font-size:15px;fill:#5e6e68}.edge-label{font-size:14px;fill:#39735f}.box{fill:#f0f6f2;stroke:#9dbdaf;stroke-width:1.5}.tool{fill:#f1f5fc;stroke:#a5b8d2;stroke-width:1.5}.line{fill:none;stroke:#39735f;stroke-width:2;stroke-linejoin:round;marker-end:url(#arrow)}.return{stroke-dasharray:6 5}
+    </style>
+  </defs>
+  <rect width="880" height="1030" rx="16" fill="#fff"/>
+  <text class="heading" x="440" y="40">工具调用闭环</text>
+
+  <rect class="box" x="280" y="75" width="300" height="80" rx="14"/>
+  <text class="label" x="430" y="109">指令 + 当前 RGB + 地图</text>
+  <text class="sub" x="430" y="136">结合当前对话与工具历史</text>
+  <path class="line" d="M430 155 V210"/>
+
+  <rect x="280" y="210" width="300" height="76" rx="14" fill="#dfeee5" stroke="#39735f" stroke-width="2"/>
+  <text class="label" x="430" y="242">VLM 推理</text>
+  <text class="sub" x="430" y="268">决定需要的证据与下一步操作</text>
+
+  <path class="line" d="M430 286 V335 H140 V390"/>
+  <path class="line" d="M430 286 V390"/>
+  <path class="line" d="M430 286 V335 H720 V390"/>
+  <text class="edge-label" x="140" y="322">按需查证</text>
+  <text class="edge-label" x="474" y="367">提交目标</text>
+  <text class="edge-label" x="720" y="322">决定停止</text>
+
+  <rect class="tool" x="30" y="390" width="220" height="86" rx="12"/>
+  <text class="label" x="140" y="423">query_depth / recall</text>
+  <text class="sub" x="140" y="451">返回深度或历史图像</text>
+  <path class="line return" d="M30 433 H14 V248 H280"/>
+  <text class="edge-label" x="142" y="233">补充证据，继续推理</text>
+
+  <rect class="tool" x="320" y="390" width="220" height="86" rx="12"/>
+  <text class="label" x="430" y="423">move_to(k, u, v)</text>
+  <text class="sub" x="430" y="451">选择 RGB 中的像素目标</text>
+  <path class="line" d="M430 476 V524"/>
+
+  <rect x="610" y="390" width="220" height="86" rx="12" fill="#f5f4ef" stroke="#c9c6b8" stroke-width="1.5"/>
+  <text class="label" x="720" y="423">stop()</text>
+  <text class="sub" x="720" y="451">终止调用</text>
+  <path class="line" d="M720 476 V546"/>
+  <rect x="620" y="546" width="200" height="64" rx="32" fill="#f5f4ef" stroke="#c9c6b8" stroke-width="1.5"/>
+  <text class="label" x="720" y="585">结束 episode</text>
+
+  <path d="M430 524 L570 604 L430 684 L290 604 Z" fill="#f9f3e7" stroke="#bba275" stroke-width="1.5"/>
+  <text class="label" x="430" y="598">几何与安全检查</text>
+  <text class="sub" x="430" y="625">目标有效、运动安全？</text>
+
+  <path class="line" d="M290 604 H250"/>
+  <text class="edge-label" x="269" y="590">否</text>
+  <rect x="30" y="564" width="220" height="80" rx="12" fill="#fcf1eb" stroke="#d1ad95" stroke-width="1.5"/>
+  <text class="label" x="140" y="596">Reselect</text>
+  <text class="sub" x="140" y="623">返回拒绝反馈，重新选择</text>
+  <path class="line return" d="M30 604 H14 V433" style="marker-end:none"/>
+
+  <path class="line" d="M430 684 V748"/>
+  <text class="edge-label" x="452" y="721">是</text>
+  <rect class="box" x="280" y="748" width="300" height="76" rx="14"/>
+  <text class="label" x="430" y="780">Execute</text>
+  <text class="sub" x="430" y="807">执行转向与前进，获得反馈</text>
+  <path class="line" d="M430 824 V883"/>
+
+  <rect class="box" x="280" y="883" width="300" height="80" rx="14"/>
+  <text class="label" x="430" y="916">下一步观察与记忆更新</text>
+  <text class="sub" x="430" y="945">获取新 RGB，更新地图与缓存</text>
+  <path class="line return" d="M580 923 H860 V115 H580"/>
+  <text class="edge-label" x="707" y="905">进入下一轮决策</text>
+  <text class="sub" x="440" y="1007">实线：操作流程　　虚线：反馈与循环</text>
+</svg>

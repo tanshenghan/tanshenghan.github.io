@@ -71,6 +71,9 @@ input, select { max-width: 100%; min-width: 0; }
 .controls label { min-width: min(160px, 100%); }
 figure img { border-radius: 0; }
 .paper-top h2 { overflow-wrap: anywhere; }
+.vln-main { overflow-wrap: anywhere; }
+.vln-main .math-inline { max-width: 100%; overflow-x: auto; vertical-align: middle; }
+.vln-main .math-display { display: block; max-width: 100%; overflow-x: auto; padding: 3px 0; }
 .paper-tag { border-radius: 2px; font-size: 11px; }
 .side-directory { z-index: 50; }
 .directory-handle { width: 28px; padding: 18px 6px; border-radius: 0 3px 3px 0; box-shadow: none; font-size: 13px; }

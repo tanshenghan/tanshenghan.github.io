@@ -97,8 +97,8 @@ for (const phrase of ["统一实验结果表", "Agentic VLN 增加的能力", "�
 
 const sourcePapers = elements(source, "article", /^paper-\d+$/);
 const outputPapers = elements(article, "article", /^paper-\d+$/);
-const expectedPaperIds = Array.from({ length: 67 }, (_, i) => `paper-${String(i + 1).padStart(2, "0")}`);
-assert.deepEqual(sourcePapers.map((paper) => paper.attrs.id), expectedPaperIds, "source snapshot must contain all 67 papers in order");
+const expectedPaperIds = sourcePapers.map((paper) => paper.attrs.id);
+assert.equal(sourcePapers.length, 54, "reviewed snapshot contains 54 chronologically ordered papers");
 assert.deepEqual(outputPapers.map((paper) => paper.attrs.id), expectedPaperIds, "publishing must not drop or reorder papers");
 sourcePapers.forEach((original, i) => {
   const rendered = outputPapers[i];
@@ -113,8 +113,8 @@ sourcePapers.forEach((original, i) => {
 
 const sourceRows = elements(source, "tr", /^result-\d+-\d+$/);
 const outputRows = elements(article, "tr", /^result-\d+-\d+$/);
-assert.equal(sourceRows.length, 137, "source snapshot must contain 137 result rows");
-assert.deepEqual(outputRows.map((row) => row.attrs.id), sourceRows.map((row) => row.attrs.id), "all 137 experimental results must remain in order");
+assert.equal(sourceRows.length, 113, "source snapshot must contain 113 result rows");
+assert.deepEqual(outputRows.map((row) => row.attrs.id), sourceRows.map((row) => row.attrs.id), "all experimental results must remain in order");
 sourceRows.forEach((original, i) => {
   const rendered = outputRows[i];
   assert.equal(textContent(rendered.content), textContent(original.content), `${original.attrs.id}: full experimental result and caveats must be retained`);
@@ -123,9 +123,9 @@ sourceRows.forEach((original, i) => {
 });
 
 const originalImages = imageSources(source);
-assert.equal(originalImages.length, 67, "catalog must contain one figure per paper");
+assert.equal(originalImages.length, 57, "catalog must retain all figures and supplementary flowcharts");
 const remoteImages = originalImages.filter((url) => /^https?:\/\//.test(url));
-assert.equal(remoteImages.length, 66, "66 original online figures must remain attributed and linked");
+assert.equal(remoteImages.length, 40, "40 original online figures must remain attributed and linked");
 assert.deepEqual(imageSources(article).filter((url) => /^https?:\/\//.test(url)), remoteImages, "all remote figures must retain their original URLs");
 assert.ok(article.includes("版权归论文作者"), "figure copyright attribution must remain visible");
 
@@ -179,8 +179,9 @@ for (const basename of ["vln-experiment-results.csv", "vln-paper-catalog.md", "v
     checkLocalReference(href, articleFile);
   }
 }
-for (const controlId of ["search", "collection", "result-search", "benchmark", "boundary-filter", "reset-papers", "reset-results", "directory-toggle", "directory-panel", "directory-search"]) {
+for (const controlId of ["search", "paper-year", "result-search", "benchmark", "boundary-filter", "reset-papers", "reset-results", "directory-toggle", "directory-panel", "directory-search"]) {
   assert.ok(readIds(articleFile).has(controlId), `interactive control ${controlId} must remain available`);
 }
 
-console.log(`VLN blog checks passed: ${seriesOrder.length} ordered series, ${posts.length} articles, 67 complete papers, 137 result rows, 67 attributed figures, ${checkedResources} local resources/anchors.`);
+assert.equal((article.match(/class="math-source"/g) || []).length, (source.match(/class="math-source"/g) || []).length, "all local TeX sources must be retained");
+console.log(`VLN blog checks passed: ${seriesOrder.length} ordered series, ${posts.length} articles, ${sourcePapers.length} complete papers, ${sourceRows.length} result rows, ${originalImages.length} attributed figures, ${checkedResources} local resources/anchors.`);

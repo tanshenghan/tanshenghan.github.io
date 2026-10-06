@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1560" height="456" viewBox="0 0 1560 456" role="img" aria-labelledby="title description">
+  <title id="title">CA-Nav：公开代码的横向执行流程</title>
+  <desc id="description">初始化读取预解析的 llm_reply，建立约束队列，左转环视十二步并生成首个动作。主循环从左到右：CSM 用已有观测检查约束，保留未满足的条件，按完成状态及步数门槛切换子指令，地标提示变化时衰减历史价值；执行上一轮缓存的动作；接收新 RGB-D 和位姿，更新语义地图、可通行区域及碰撞状态；BLIP-2 图文匹配，融合价值地图并乘轨迹掩码；SLIC 提出候选，WaypointSelector 筛选，末段已确认目标可覆盖探索点，FMM 生成下一动作并缓存。随后携最新观测返回 CSM。环境返回 done 时结束。图概括常规导航路径，省略辅助恢复和日志分支。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="#39735f"/></marker>
+    <marker id="end-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="#977b52"/></marker>
+    <style>
+      text{font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei","Noto Sans CJK SC",sans-serif;text-anchor:middle;fill:#203832}
+      .title{font-size:29px;font-weight:700}.stage{font-size:20px;font-weight:650;fill:#39735f}.label{font-size:25px;font-weight:650}.body{font-size:21px;fill:#4e655b}.small{font-size:19px;fill:#65766f}.edge-label{font-size:21px;fill:#39735f}
+      .box{fill:#f0f6f2;stroke:#a9c5b6;stroke-width:1.8}.csm{fill:#edf3fa;stroke:#9bb7d2;stroke-width:1.8}.init{fill:#faf5e9;stroke:#d1bf9c;stroke-width:1.8}.line{fill:none;stroke:#39735f;stroke-width:2.6;stroke-linejoin:round;marker-end:url(#arrow)}.return{stroke-dasharray:8 6}.end{fill:none;stroke:#977b52;stroke-width:2;marker-end:url(#end-arrow)}
+    </style>
+  </defs>
+  <rect width="1560" height="456" rx="14" fill="#fff"/>
+  <text class="title" x="780" y="40">CA-Nav · 代码执行闭环</text>
+  <text class="small" x="780" y="71">从左到右推进；当前轮执行缓存动作，再用新观测生成下一动作</text>
+
+  <text class="stage" x="130" y="108">初始化一次</text>
+  <rect class="init" x="20" y="124" width="220" height="198" rx="12"/>
+  <text class="label" x="130" y="160">准备指令与地图</text>
+  <text class="body" x="130" y="198">读取预解析指令</text>
+  <text class="body" x="130" y="229">建立约束队列</text>
+  <text class="body" x="130" y="260">左转环视 12 步</text>
+  <text class="body" x="130" y="291">建图并缓存首个动作</text>
+  <path class="line" d="M240 223 H275"/>
+
+  <text class="stage" x="400" y="108">CSM · 进度管理</text>
+  <rect class="csm" x="275" y="124" width="250" height="198" rx="12"/>
+  <text class="label" x="400" y="160">检查并更新约束</text>
+  <text class="body" x="400" y="198">物体 / 地点 / 方向</text>
+  <text class="body" x="400" y="229">保留未满足的条件</text>
+  <text class="body" x="400" y="260">按完成状态与步数切换</text>
+  <text class="small" x="400" y="291">地标改变：历史价值 × 0.5</text>
+  <path class="line" d="M525 223 H560"/>
+
+  <text class="stage" x="650" y="108">环境交互</text>
+  <rect class="box" x="560" y="124" width="180" height="198" rx="12"/>
+  <text class="label" x="650" y="160">执行缓存动作</text>
+  <text class="body" x="650" y="203">envs.step</text>
+  <text class="body" x="650" y="246">上一轮已生成</text>
+  <text class="small" x="650" y="281">首轮来自环视</text>
+  <path class="line" d="M740 223 H775"/>
+
+  <text class="stage" x="885" y="108">感知与语义建图</text>
+  <rect class="box" x="775" y="124" width="220" height="198" rx="12"/>
+  <text class="label" x="885" y="160">接收新观测</text>
+  <text class="body" x="885" y="198">RGB-D + 位姿</text>
+  <text class="body" x="885" y="229">更新语义地图</text>
+  <text class="body" x="885" y="260">提取可通行区域</text>
+  <text class="body" x="885" y="291">更新碰撞 / 停滞状态</text>
+  <path class="line" d="M995 223 H1030"/>
+
+  <text class="stage" x="1140" y="108">CVM · 价值建图</text>
+  <rect class="box" x="1030" y="124" width="220" height="198" rx="12"/>
+  <text class="label" x="1140" y="160">更新价值地图</text>
+  <text class="body" x="1140" y="198">当前地标 + RGB</text>
+  <text class="body" x="1140" y="229">BLIP-2 图文匹配</text>
+  <text class="body" x="1140" y="260">按视场置信度融合</text>
+  <text class="body" x="1140" y="291">价值 × 轨迹掩码</text>
+  <path class="line" d="M1250 223 H1285"/>
+
+  <text class="stage" x="1412.5" y="108">选点与局部规划</text>
+  <rect class="box" x="1285" y="124" width="255" height="198" rx="12"/>
+  <text class="label" x="1412.5" y="160">生成下一动作</text>
+  <text class="body" x="1412.5" y="198">SLIC → waypoint 筛选</text>
+  <text class="body" x="1412.5" y="229">末段目标可覆盖探索点</text>
+  <text class="body" x="1412.5" y="260">FMM → 前进 / 转向 / 停止</text>
+  <text class="body" x="1412.5" y="291">缓存 action</text>
+
+  <path class="end" d="M650 322 V357"/>
+  <text class="small" x="722" y="346">done</text>
+  <rect class="init" x="570" y="359" width="160" height="42" rx="21"/>
+  <text class="body" x="650" y="388">结束 episode</text>
+
+  <path class="line return" d="M1412.5 322 V429 H400 V322"/>
+  <text class="edge-label" x="1070" y="405">携最新观测与缓存动作 → 下一轮约束检查</text>
+</svg>
