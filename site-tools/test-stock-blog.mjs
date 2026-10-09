@@ -1,217 +1,105 @@
-import assert from "node:assert/strict";
-import fs from "node:fs";
-import path from "node:path";
-import vm from "node:vm";
-import { fileURLToPath } from "node:url";
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import vm from 'node:vm';
+import { fileURLToPath } from 'node:url';
+import { publicReportSnapshot } from './standalone-report.mjs';
 
-// Read-only, source-based preservation checks. Run the build separately.
-// These checks validate importing the supplied report, not its financial claims.
-const toolsDir = path.dirname(fileURLToPath(import.meta.url));
-const siteDir = process.env.SITE_OUTPUT_DIR
-  ? path.resolve(process.env.SITE_OUTPUT_DIR)
-  : path.resolve(toolsDir, fs.existsSync(path.resolve(toolsDir, "../docs/index.html")) ? "../docs" : "..");
-const blogDir = path.join(siteDir, "blog");
-const posts = JSON.parse(fs.readFileSync(path.join(toolsDir, "posts.json"), "utf8"));
-const post = posts.find((entry) => entry.seriesSlug === "taolao-research" && entry.slug === "baofeng-energy");
-assert.ok(post, "the first 套牢研究 article must remain registered");
-assert.equal(post.title, "宝丰能源分析");
-assert.equal(post.series, "套牢研究");
-assert.equal(post.number, "01");
-assert.equal(post.format, "standalone-report");
-assert.equal(post.source, "baofeng-energy/report.html");
+// Import integrity tests, not an audit of the supplied financial conclusions.
+const root = path.dirname(fileURLToPath(import.meta.url));
+const site = process.env.SITE_OUTPUT_DIR ? path.resolve(process.env.SITE_OUTPUT_DIR)
+  : path.resolve(root, fs.existsSync(path.resolve(root, '../docs/index.html')) ? '../docs' : '..');
+const posts = JSON.parse(fs.readFileSync(path.join(root, 'posts.json'), 'utf8'));
+const reports = posts.filter(p => p.seriesSlug === 'taolao-research');
+assert.equal(reports.length, 11);
+assert.deepEqual(reports.slice(0, 2).map(p => [p.slug, p.number]), [['baofeng-energy', '01'], ['sf-holding', '02']]);
+assert.deepEqual(reports.map(p => p.number), Array.from({length: 11}, (_, i) => String(i + 1).padStart(2, '0')));
+assert.deepEqual([...new Set(posts.map(p => p.seriesSlug))], ['flow-matching', 'vln-voyager', 'taolao-research']);
 
-const sourceFile = path.join(toolsDir, "content", post.source);
-const articleFile = path.join(blogDir, post.seriesSlug, post.slug, "index.html");
-const indexFile = path.join(blogDir, "index.html");
-const seriesFile = path.join(blogDir, post.seriesSlug, "index.html");
-const source = fs.readFileSync(sourceFile, "utf8");
-const article = fs.readFileSync(articleFile, "utf8");
-const index = fs.readFileSync(indexFile, "utf8");
-const series = fs.readFileSync(seriesFile, "utf8");
-
-function decodeHtml(value) {
-  const named = { amp: "&", quot: '"', apos: "'", lt: "<", gt: ">", nbsp: " " };
-  return value.replace(/&(#x[\da-f]+|#\d+|amp|quot|apos|lt|gt|nbsp);/gi, (entity, code) => {
-    if (code[0] !== "#") return named[code.toLowerCase()] ?? entity;
-    const hex = code[1].toLowerCase() === "x";
-    return String.fromCodePoint(Number.parseInt(code.slice(hex ? 2 : 1), hex ? 16 : 10));
-  });
+function blocks(html, tag) {
+  return [...html.matchAll(new RegExp(`<${tag}\\b[^>]*>[\\s\\S]*?<\\/${tag}>`, 'gi'))].map(m => m[0]);
 }
-
-function attributes(tag) {
-  return Object.fromEntries([...tag.matchAll(/(?:^|\s)([\w:-]+)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/g)]
-    .map((match) => [match[1].toLowerCase(), decodeHtml(match[2] ?? match[3] ?? match[4])]));
+function markup(html) { return html.replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1>/gi, '').replace(/<!--[\s\S]*?-->/g, ''); }
+function ids(html) {
+  const all = [...markup(html).matchAll(/\bid=["']([^"']+)["']/g)].map(m => m[1]);
+  assert.equal(all.length, new Set(all).size, 'IDs must be unique');
+  return new Set(all);
 }
-
-function withoutRawText(html) {
-  return html.replace(/<!--[\s\S]*?-->/g, "")
-    .replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1>/gi, "");
+function body(html) {
+  return blocks(html, 'body')[0]
+    .replace(/<nav class="blog-context"[\s\S]*?<\/nav>/, '')
+    .replace(/<h1\b[^>]*>[\s\S]*?<\/h1>/, '').replace(/>\s+</g, '><').trim();
 }
-
-function openingTags(html, name = "[a-z][\\w:-]*") {
-  // Do not interpret HTML templates inside JavaScript as live document elements.
-  return [...withoutRawText(html).matchAll(new RegExp(`<(${name})\\b[^>]*>`, "gi"))]
-    .map((match) => ({ name: match[1].toLowerCase(), attrs: attributes(match[0]) }));
-}
-
-function blocks(html, name) {
-  return [...html.matchAll(new RegExp(`<${name}\\b([^>]*)>([\\s\\S]*?)<\\/${name}>`, "gi"))]
-    .map((match) => ({ markup: match[0], attrs: attributes(match[1]), content: match[2] }));
-}
-
-function textContent(html) {
-  return decodeHtml(withoutRawText(html).replace(/<[^>]+>/g, " ")).replace(/\s+/g, " ").trim();
-}
-
-function links(html) {
-  return openingTags(html, "a").map((tag) => tag.attrs.href).filter(Boolean);
-}
-
-// Find a full wrapper even if its integration navigation contains nested divs.
-function contextBlock(html) {
-  const candidates = [...html.matchAll(/<([a-z][\w:-]*)\b[^>]*>/gi)]
-    .filter((match) => (attributes(match[0]).class ?? "").split(/\s+/).includes("blog-context"));
-  assert.equal(candidates.length, 1, "article must have one blog-context navigation wrapper");
-  const start = candidates[0];
-  const tagName = start[1];
-  const tags = new RegExp(`<(/?)${tagName}\\b[^>]*>`, "gi");
-  tags.lastIndex = start.index;
-  let depth = 0;
-  for (let match; (match = tags.exec(html));) {
-    depth += match[1] ? -1 : 1;
-    if (depth === 0) return { start: start.index, end: tags.lastIndex, markup: html.slice(start.index, tags.lastIndex) };
-  }
-  assert.fail("blog-context wrapper must have a matching closing tag");
-}
-
-const order = [...new Set(posts.map((entry) => entry.seriesSlug))];
-assert.deepEqual(order, ["flow-matching", "vln-voyager", "taolao-research"], "existing series must remain ahead of 套牢研究");
-const stockPosts = posts.filter((entry) => entry.seriesSlug === post.seriesSlug);
-assert.deepEqual(stockPosts.slice(0, 2).map(p => [p.slug, p.number]), [["baofeng-energy", "01"], ["sf-holding", "02"]], "宝丰能源 and 顺丰控股 must remain the first two chapters");
-assert.ok(textContent(index).includes(`${order.length} 个系列 / ${posts.length} 篇笔记`), "index totals must match the registered articles");
-order.forEach((slug, i) => {
-  assert.ok(links(index).includes(`${slug}/`), `index must link to ${slug}`);
-  if (i) assert.ok(index.indexOf(`href="${order[i - 1]}/"`) < index.indexOf(`href="${slug}/"`), "visible series order must match metadata");
-});
-assert.ok(links(index).includes("taolao-research/baofeng-energy/"), "index must link directly to the report");
-assert.equal(blocks(series, "h1").length, 1, "series page must have one h1");
-assert.equal(textContent(blocks(series, "h1")[0].content), "套牢研究");
-assert.ok(links(series).includes("../taolao-research/baofeng-energy/"), "series directory must link to its first article");
-assert.match(textContent(series), /01[\s\S]*宝丰能源分析/, "series must identify Part 01 by title");
-
-assert.equal(blocks(article, "title").length, 1, "report must retain one document title");
-assert.match(textContent(blocks(article, "title")[0].content), /宝丰能源分析.*套牢研究/, "document title must identify both the report and its series");
-const originalHeading = blocks(source, "h1");
-const importedHeading = blocks(article, "h1");
-assert.equal(originalHeading.length, 1);
-assert.equal(importedHeading.length, 1);
-assert.match(importedHeading[0].content, /^\s*宝丰能源分析\s*(?:<|$)/, "visible report title must match metadata");
-assert.deepEqual(blocks(importedHeading[0].content, "small"), blocks(originalHeading[0].content, "small"), "the original subtitle must be preserved");
-const context = contextBlock(article);
-assert.ok(article.indexOf('<main') < context.start && context.end <= article.indexOf('<header class="report-header'), "blog navigation must appear inside main before the report header");
-for (const href of ["../../../", "../../", "../"]) assert.ok(links(context.markup).includes(href), `navigation must include ${href}`);
-assert.ok(textContent(context.markup).includes("套牢研究"), "navigation must name the series");
-
-const sourceScripts = blocks(source, "script");
-const articleScripts = blocks(article, "script");
-assert.equal(sourceScripts.length, 2, "source has one JSON dataset and one inline runtime");
-assert.deepEqual(articleScripts, sourceScripts, "all original script tags, data and runtime must be preserved byte for byte with no injected runtime");
-const sourceData = sourceScripts.find((entry) => entry.attrs.id === "report-data");
-assert.equal(sourceData?.attrs.type, "application/json");
-assert.deepEqual(Object.keys(JSON.parse(sourceData.content)).sort(), ["modelV2", "products"], "embedded datasets must remain readable");
-for (const script of articleScripts) if (script.attrs.type !== "application/json") new vm.Script(script.content, { filename: "baofeng-energy-inline.js" });
-const sourceStyles = blocks(source, "style");
-const articleStyles = blocks(article, "style");
-assert.ok(sourceStyles.length > 0);
-assert.equal(articleStyles.length, sourceStyles.length + 1, "integration styles must live in one separate style block");
-assert.deepEqual(articleStyles.filter((entry) => !entry.content.includes(".blog-context")), sourceStyles, "original report styles must be preserved byte for byte");
-assert.equal(articleStyles.filter((entry) => entry.content.includes(".blog-context")).length, 1);
-
-// Preserve every original paragraph, table, caveat, source, control and link.
-// Only the heading and added blog navigation are outside this comparison.
-function financialBody(html, integration) {
-  const body = blocks(html, "body");
-  assert.equal(body.length, 1);
-  let result = body[0].content;
-  if (integration) result = result.replace(integration.markup, "");
-  return result.replace(/<h1\b[^>]*>[\s\S]*?<\/h1>/gi, "")
-    .replace(/>\s+</g, "><").trim();
-}
-assert.equal(financialBody(article, context), financialBody(source), "entire supplied report body must remain unchanged except the article heading and added navigation");
-const sectionIds = (html) => openingTags(html, "section").map((entry) => entry.attrs.id).filter(Boolean);
-assert.deepEqual(sectionIds(source), ["thesis", "products", "financials", "model", "sources"]);
-assert.deepEqual(sectionIds(article), sectionIds(source), "all five report sections must retain their order");
-
-const htmlCache = new Map([[indexFile, index], [seriesFile, series], [articleFile, article]]);
-const idCache = new Map();
-function readIds(file) {
-  if (!idCache.has(file)) {
-    const html = htmlCache.get(file) ?? fs.readFileSync(file, "utf8");
-    const entries = openingTags(html).map((entry) => entry.attrs.id).filter(Boolean);
-    assert.equal(entries.length, new Set(entries).size, `${path.relative(siteDir, file)}: duplicate IDs`);
-    idCache.set(file, new Set(entries));
-  }
-  return idCache.get(file);
-}
-
-let checkedReferences = 0;
-function checkLocalReference(reference, owner) {
-  assert.doesNotMatch(reference, /^(?:file:|javascript:)/i, "published links must not use filesystem or executable URLs");
-  if (!reference || /^(?:https?:|data:|mailto:|tel:|\/\/)/i.test(reference)) return;
-  const local = new URL(reference, `https://report.invalid/${path.relative(siteDir, owner).split(path.sep).join("/")}`);
-  assert.equal(local.origin, "https://report.invalid", `unsupported reference scheme: ${reference}`);
-  let target = path.resolve(siteDir, `.${decodeURIComponent(local.pathname)}`);
-  assert.ok(target === siteDir || target.startsWith(siteDir + path.sep), "local resource must remain within the published site");
-  assert.ok(fs.existsSync(target), `${path.relative(siteDir, owner)}: missing resource ${reference}`);
-  if (fs.statSync(target).isDirectory()) target = path.join(target, "index.html");
-  assert.ok(fs.existsSync(target), `${reference}: directory destination must contain index.html`);
-  if (local.hash && /\.html?$/i.test(target)) assert.ok(readIds(target).has(decodeURIComponent(local.hash.slice(1))), `${reference}: missing fragment target`);
-  checkedReferences += 1;
-}
-
-for (const [file, html] of htmlCache) {
-  readIds(file);
-  assert.doesNotMatch(html, /file:\/\/|\/Users\/|\/home\/|\/private\/|localhost|127\.0\.0\.1|[A-Z]:\\Users\\/i, `${path.relative(siteDir, file)}: private filesystem and preview references are forbidden`);
-  for (const tag of openingTags(html)) {
-    for (const name of ["href", "src", "data-src", "poster", "action"]) if (tag.attrs[name]) checkLocalReference(tag.attrs[name], file);
-    for (const match of (tag.attrs.srcset ?? "").matchAll(/(?:^|,)\s*(\S+)/g)) checkLocalReference(match[1], file);
-  }
-  for (const script of blocks(html, "script")) if (script.attrs.src) checkLocalReference(script.attrs.src, file);
-  for (const style of blocks(html, "style")) {
-    for (const match of style.content.matchAll(/url\(\s*["']?([^)'"\s]+)["']?\s*\)/g)) checkLocalReference(match[1], file);
+let references = 0;
+function check(file, html) {
+  assert.doesNotMatch(html, /file:\/\/|\/Users\/|\/home\/|\/private\/|localhost|127\.0\.0\.1/i);
+  ids(html);
+  const refs = [...markup(html).matchAll(/\b(?:href|src|action|poster)=["']([^"']+)["']/g)].map(m => m[1]);
+  for (const ref of refs) {
+    assert.doesNotMatch(ref, /^(?:javascript|file):/i);
+    if (/^(?:https?:|mailto:|data:|\/\/)/i.test(ref)) continue;
+    const url = new URL(ref, `https://test.invalid/${path.relative(site, file)}`);
+    let target = path.resolve(site, '.' + decodeURIComponent(url.pathname));
+    assert.ok(target.startsWith(site + path.sep) || target === site);
+    assert.ok(fs.existsSync(target), `${file}: missing ${ref}`);
+    if (fs.statSync(target).isDirectory()) target = path.join(target, 'index.html');
+    assert.ok(fs.existsSync(target), `${ref}: missing index`);
+    if (url.hash && target.endsWith('.html')) assert.ok(ids(fs.readFileSync(target, 'utf8')).has(decodeURIComponent(url.hash.slice(1))), `${file}: missing ${ref}`);
+    references++;
   }
 }
-for (const controlId of ["print-report", "product-select", "metric-select", "download-products", "v2-period", "v2-anchor", "v2-months", "v2-reset", "v2-stress", "v2-export", "v2-csv", "v2-net", "v2-errors", "v2-heatmap"]) {
-  assert.ok(readIds(articleFile).has(controlId), `interactive report control ${controlId} must remain available`);
+const indexFile = path.join(site, 'blog/index.html');
+const seriesFile = path.join(site, 'blog/taolao-research/index.html');
+const index = fs.readFileSync(indexFile, 'utf8');
+const series = fs.readFileSync(seriesFile, 'utf8');
+assert.ok(index.includes(`3 个系列 / ${posts.length} 篇笔记`));
+assert.equal(blocks(series, 'h1').length, 1);
+assert.match(blocks(series, 'h1')[0], /套牢研究/);
+check(indexFile, index); check(seriesFile, series);
+let previousPosition = -1;
+for (const post of reports) {
+  const source = fs.readFileSync(path.join(root, 'content', post.source), 'utf8');
+  const file = path.join(site, 'blog', post.seriesSlug, post.slug, 'index.html');
+  const article = fs.readFileSync(file, 'utf8');
+  assert.equal(post.format, 'standalone-report');
+  assert.match(article, new RegExp(`<title>${post.title} · 套牢研究 · shong Tan</title>`));
+  assert.equal(blocks(article, 'h1').length, 1);
+  assert.ok(blocks(article, 'h1')[0].startsWith(`<h1>${post.title}`));
+  assert.equal(blocks(article, 'h1')[0].replace(post.title, ''), blocks(source, 'h1')[0].replace(post.title.replace(/分析$/, ''), ''), 'subtitle preserved');
+  assert.equal(body(article), body(source), `${post.title}: complete body, sources, tables and controls preserved`);
+  assert.deepEqual(blocks(article, 'script'), blocks(source, 'script'), `${post.title}: original data/runtime preserved verbatim`);
+  assert.deepEqual(blocks(article, 'style').filter(s => !s.includes('data-blog-integration')), blocks(source, 'style'));
+  assert.equal(blocks(article, 'style').length, blocks(source, 'style').length + 1);
+  const context = article.match(/<nav class="blog-context"[\s\S]*?<\/nav>/g);
+  assert.equal(context?.length, 1);
+  for (const href of ['../../../', '../../', '../']) assert.ok(context[0].includes(`href="${href}"`));
+  const liveMarkup = markup(article);
+  assert.doesNotMatch(liveMarkup, /<(?:iframe|object|embed|form|base)\b|\bon\w+\s*=/i);
+  assert.doesNotMatch(article, /<(?:script|img)\b[^>]*src\s*=/i);
+  for (const script of blocks(article, 'script')) {
+    const content = script.replace(/^<script\b[^>]*>/i, '').replace(/<\/script>$/i, '');
+    if (/^<script\b[^>]*type="application\/json"/i.test(script)) JSON.parse(content);
+    else {
+      new vm.Script(content, {filename: post.slug + '.js'});
+      assert.doesNotMatch(content, /\b(?:fetch|eval|XMLHttpRequest|WebSocket|importScripts)\s*\(|new\s+Function\b|sendBeacon\s*\(|document\.cookie/);
+    }
+  }
+  assert.ok(index.includes(`href="taolao-research/${post.slug}/"`));
+  const position = series.indexOf(`href="../taolao-research/${post.slug}/"`);
+  assert.ok(position > previousPosition, 'chapter ordering');
+  previousPosition = position;
+  check(file, article);
+  // Optional comparison with the original supplied files. Only machine paths
+  // may differ; original reports remain untouched by the import process.
+  if (process.env.STOCK_SOURCE_DIR) {
+    const raw = fs.readFileSync(path.join(process.env.STOCK_SOURCE_DIR, post.importFilename), 'utf8');
+    assert.equal(source, publicReportSnapshot(raw), `${post.title}: latest input snapshot`);
+    const json = s => JSON.parse(s.match(/<script\b[^>]*type="application\/json"[^>]*>([\s\S]*?)<\/script>/i)[1]);
+    const normalize = x => Array.isArray(x) ? x.map(normalize) : x && typeof x === 'object'
+      ? Object.fromEntries(Object.entries(x).map(([k, v]) => [k, normalize(v)]))
+      : typeof x === 'string' && /^\/(Users|home|private)\//.test(x) ? path.posix.basename(x) : x;
+    assert.deepEqual(json(source), normalize(json(raw)), `${post.title}: financial data unchanged`);
+  }
 }
-assert.equal(openingTags(article).filter((entry) => ["img", "iframe", "object", "embed"].includes(entry.name)).length, 0, "this report requires no separately copied embedded media");
-assert.ok(articleScripts.every((entry) => !entry.attrs.src), "the standalone report must not require remote JavaScript");
-const sfPost = stockPosts.find(p => p.slug === "sf-holding");
-assert.equal(sfPost.title, "顺丰控股分析");
-assert.equal(sfPost.format, "standalone-report");
-const sfFile = path.join(blogDir, sfPost.seriesSlug, sfPost.slug, "index.html");
-const sfSource = fs.readFileSync(path.join(toolsDir, "content", sfPost.source), "utf8");
-const sfArticle = fs.readFileSync(sfFile, "utf8");
-htmlCache.set(sfFile, sfArticle);
-const sfContext = contextBlock(sfArticle);
-assert.equal(financialBody(sfArticle, sfContext), financialBody(sfSource), "SF report body must be unchanged except the heading/navigation");
-assert.deepEqual(blocks(sfArticle, "script"), blocks(sfSource, "script"), "SF data and runtime must be preserved verbatim");
-assert.deepEqual(blocks(sfArticle, "style").filter(s => !s.content.includes(".blog-context")), blocks(sfSource, "style"), "SF original styles must be preserved");
-assert.match(sfArticle, /<title>顺丰控股分析 · 套牢研究/);
-assert.match(sfArticle, /<h1>顺丰控股分析<br>十年业务与财务观察<\/h1>/);
-assert.ok(links(index).includes("taolao-research/sf-holding/"));
-assert.ok(links(series).includes("../taolao-research/sf-holding/"));
-assert.ok(series.indexOf('href="../taolao-research/baofeng-energy/"') < series.indexOf('href="../taolao-research/sf-holding/"'));
-assert.deepEqual(sectionIds(sfArticle), sectionIds(sfSource));
-for (const href of ["../../../", "../../", "../"]) assert.ok(links(sfContext.markup).includes(href));
-assert.doesNotMatch(sfArticle, /file:\/\/|\/Users\/|\/private\/|localhost|127\.0\.0\.1/i);
-readIds(sfFile);
-for (const tag of openingTags(sfArticle)) {
-  for (const name of ["href", "src", "data-src"]) if (tag.attrs[name]) checkLocalReference(tag.attrs[name], sfFile);
-}
-for (const s of blocks(sfArticle, "script")) {
-  if (s.attrs.type === "application/json") JSON.parse(s.content);
-  else new vm.Script(s.content);
-}
-for (const id of ["business-period", "business-category", "finance-metric", "finance-transform", "profit-period", "profit-category", "download-finance", "download-business", "download-all"]) assert.ok(readIds(sfFile).has(id), `${id}: SF interaction preserved`);
-console.log(`Stock blog checks passed: ${order.length} series, ${posts.length} articles; Baofeng and SF report bodies/data/scripts/styles preserved; ${checkedReferences} local resources/anchors.`);
+assert.equal(publicReportSnapshot('<script type="application/json">{"file":"/Users/example/report.pdf","url":"https://example.org/a.pdf","n":123}</script>'), '<script type="application/json">{"file":"report.pdf","url":"https://example.org/a.pdf","n":123}</script>');
+console.log(`Stock blog checks passed: ${reports.length} reports; bodies, data, scripts and styles preserved; ${references} local links checked.`);

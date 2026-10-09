@@ -54,6 +54,8 @@
     "seriesSlug": "taolao-research",
     "number": "01",
     "date": "2026-10-05",
+    "updated": "2026-10-09",
+    "importFilename": "宝丰能源深度分析报告.html",
     "description": "从产品结构和一体化生产链出发，结合财务、债务与现金流，理解宝丰能源的经营逻辑。附可调整的利润情景模型、历史数据对照和来源说明。",
     "subtitle": "产品、资本与利润的关系。",
     "tags": ["宝丰能源", "财报分析", "煤化工", "利润模型"],
@@ -69,11 +71,85 @@
     "seriesSlug": "taolao-research",
     "number": "02",
     "date": "2026-10-06",
-    "description": "沿着业务结构、盈利与资本回报，回看顺丰控股 2016—2025 年十年财务，并单列 2026 年半年报。附业务与财务交互图表、分部利润、现金流及债务分析。",
-    "subtitle": "十年业务与财务观察。",
+    "updated": "2026-10-09",
+    "importFilename": "顺丰控股深度分析报告.html",
+    "description": "回溯十年业务变化，拆解当前六类业务与增长机会，结合现金流、债务和交互估值模型，检验增长预期兑现为股东回报的条件。",
+    "subtitle": "十年业务、增长与估值。",
     "tags": ["顺丰控股", "物流", "财报分析", "现金流与债务"],
     "format": "standalone-report",
     "source": "sf-holding/report.html",
     "readingLabel": "十年财务 · 交互研究报告"
+  },
+  {
+    "title": "珀莱雅分析", "author": "shong Tan", "slug": "proya",
+    "series": "套牢研究", "seriesSlug": "taolao-research", "number": "03", "date": "2026-10-09",
+    "description": "沿着品牌、渠道与营销效率回看十年财务，区分经营利润与并购重估收益，结合现金流、负债及业务图表观察多品牌接力。",
+    "subtitle": "十年品牌与财务观察。", "tags": ["珀莱雅", "化妆品", "品牌与渠道", "财报分析"],
+    "format": "standalone-report", "source": "proya/report.html", "importFilename": "珀莱雅深度分析报告.html",
+    "readingLabel": "品牌与财务 · 交互研究报告"
+  },
+  {
+    "title": "峰岹科技分析", "author": "shong Tan", "slug": "fortior-technology",
+    "series": "套牢研究", "seriesSlug": "taolao-research", "number": "04", "date": "2026-10-09",
+    "description": "从电机控制芯片与算法切入，拆解收入、研发投入、资本配置和股权激励，使用盈利模型与 DCF 情景检验每股价值。",
+    "subtitle": "从电机控制，到每股价值。", "tags": ["峰岹科技", "半导体", "电机控制", "估值模型"],
+    "format": "standalone-report", "source": "fortior-technology/report.html", "importFilename": "峰岹科技深度分析报告.html",
+    "readingLabel": "芯片与算法 · 交互研究报告"
+  },
+  {
+    "title": "嘉友国际分析", "author": "shong Tan", "slug": "jiayou-international",
+    "series": "套牢研究", "seriesSlug": "taolao-research", "number": "05", "date": "2026-10-09",
+    "description": "分辨物流服务、贸易价差与陆港运营的盈利机制，结合历史财务、海外通道投入和现金流，检验增长与每股价值的关系。",
+    "subtitle": "通道、贸易与每股价值。", "tags": ["嘉友国际", "跨境物流", "资本配置", "估值模型"],
+    "format": "standalone-report", "source": "jiayou-international/report.html", "importFilename": "嘉友国际深度分析报告.html",
+    "readingLabel": "物流与贸易 · 交互研究报告"
+  },
+  {
+    "title": "中国太保分析", "author": "shong Tan", "slug": "cpic",
+    "series": "套牢研究", "seriesSlug": "taolao-research", "number": "06", "date": "2026-10-09",
+    "description": "区分寿险保单价值、产险承保和投资收益，结合资本、分红、内含价值与股息模型，观察长期承诺如何转化为股东回报。",
+    "subtitle": "保单价值、承保与股东回报。", "tags": ["中国太保", "保险", "内含价值", "股息模型"],
+    "format": "standalone-report", "source": "cpic/report.html", "importFilename": "中国太保深度分析报告.html",
+    "readingLabel": "保险与资本 · 交互研究报告"
+  },
+  {
+    "title": "赛轮轮胎分析", "author": "shong Tan", "slug": "sailun-tire",
+    "series": "套牢研究", "seriesSlug": "taolao-research", "number": "07", "date": "2026-10-09",
+    "description": "拆解轮胎销量、价格与产品结构，结合全球产能布局、资本开支及现金流，检验海外扩张转化为普通股回报的条件。",
+    "subtitle": "量价、全球产能与股东回报。", "tags": ["赛轮轮胎", "轮胎制造", "海外产能", "现金流"],
+    "format": "standalone-report", "source": "sailun-tire/report.html", "importFilename": "赛轮轮胎深度分析报告.html",
+    "readingLabel": "制造与出海 · 交互研究报告"
+  },
+  {
+    "title": "迈瑞医疗分析", "author": "shong Tan", "slug": "mindray-medical",
+    "series": "套牢研究", "seriesSlug": "taolao-research", "number": "08", "date": "2026-10-09",
+    "description": "围绕医疗设备、试剂耗材与国际化，拆解业务增长、研发、并购及现金分配，用交互模型检验经营变化对每股价值的影响。",
+    "subtitle": "产品、海外增长与每股价值。", "tags": ["迈瑞医疗", "医疗器械", "国际化", "估值模型"],
+    "format": "standalone-report", "source": "mindray-medical/report.html", "importFilename": "迈瑞医疗深度分析报告.html",
+    "readingLabel": "医疗与增长 · 交互研究报告"
+  },
+  {
+    "title": "信达生物分析", "author": "shong Tan", "slug": "innovent-biologics",
+    "series": "套牢研究", "seriesSlug": "taolao-research", "number": "09", "date": "2026-10-09",
+    "description": "分开产品销售、授权款、履约责任与未来管线收益，结合研发预算和风险调整现金流，观察商业化基础与管线价值。",
+    "subtitle": "商业化现金与研发管线。", "tags": ["信达生物", "生物医药", "研发管线", "现金流"],
+    "format": "standalone-report", "source": "innovent-biologics/report.html", "importFilename": "信达生物深度分析报告.html",
+    "readingLabel": "商业化与研发 · 交互研究报告"
+  },
+  {
+    "title": "美的集团分析", "author": "shong Tan", "slug": "midea-group",
+    "series": "套牢研究", "seriesSlug": "taolao-research", "number": "10", "date": "2026-10-09",
+    "description": "从全球家电与工业业务出发，追踪毛利、费用、汇率对冲和资本投入，结合分部盈利与分红模型分析经营效率和股东现金。",
+    "subtitle": "从经营效率到股东现金。", "tags": ["美的集团", "家电", "全球化", "股东回报"],
+    "format": "standalone-report", "source": "midea-group/report.html", "importFilename": "美的集团深度分析报告.html",
+    "readingLabel": "全球经营 · 交互研究报告"
+  },
+  {
+    "title": "招商银行分析", "author": "shong Tan", "slug": "china-merchants-bank",
+    "series": "套牢研究", "seriesSlug": "taolao-research", "number": "11", "date": "2026-10-09",
+    "description": "拆解存贷定价、财富管理与信用成本，结合风险、资本及普通股权益模型，检验经营优势转化为股东回报的条件。",
+    "subtitle": "把经营优势转成普通股回报。", "tags": ["招商银行", "银行", "资本回报", "估值模型"],
+    "format": "standalone-report", "source": "china-merchants-bank/report.html", "importFilename": "招商银行深度分析报告.html",
+    "readingLabel": "银行与资本 · 交互研究报告"
   }
 ]

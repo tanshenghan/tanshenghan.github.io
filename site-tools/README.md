@@ -75,6 +75,14 @@ npm test
 
 “套牢研究”第二篇为「顺丰控股分析」，地址 `/blog/taolao-research/sf-holding/`。原始单文件快照为 `content/sf-holding/report.html`，同样使用 `standalone-report` 导入，保留十年财务、业务图表、分部利润与数据导出。只更新博客标题和返回导航，不改写原始财务内容；测试同时保护宝丰能源与顺丰两篇报告。
 
+### 套牢研究 · 全集更新（2026-10-09）
+
+现有 11 篇报告：宝丰能源、顺丰控股、珀莱雅、峰岹科技、嘉友国际、中国太保、赛轮轮胎、迈瑞医疗、信达生物、美的集团、招商银行。前两篇地址与编号保持不变，新报告接续为 03–11。原报告的研究日期与行情截止日期保留，博客日期表示发布／更新时间，不代表实时行情。
+
+`posts.json` 中的 `importFilename` 对应输入目录顶层的报告，`source` 对应仓库快照。更新时运行 `node import-stock-reports.mjs <报告目录>`，再执行 `npm run build` 和 `npm test`。可通过 `STOCK_SOURCE_DIR=<报告目录> node test-stock-blog.mjs` 额外核验输入文件一致性。不会递归导入 backup、research、source 等目录。
+
+导入只将 JSON 数据中的本机绝对路径改为来源文件名，保留所有数值、公开来源链接、正文、原样式和交互脚本。原始输入文件不变。脚本更新须重新审查白名单；测试验证全部报告的完整性、目录顺序及本地链接，不验证财务分析结论。
+
 在本地大工作区根目录运行 `python3 -m http.server 4173 --directory docs`；在独立 GitHub Pages 仓库根目录运行 `python3 -m http.server 4173`。
 打开 `http://localhost:4173/blog/`。构建无需在 GitHub 上运行，提交生成后的 HTML、CSS、JS、字体和源码即可。
 
