@@ -18,6 +18,9 @@ const reviewedScripts = new Set([
   "1d1345ece42f8fb84b5b945e8b2ee3ac46cc73003a4f025b06fd851c142fad9f",
 ]);
 const reviewedDependencies = new Map([
+  // Reviewed 2026-10-09: DOM-derived search, multi-tag filters, sorting,
+  // accessible directory, fragment reveal and user-triggered local CSV export.
+  ["assets/vln-catalog.js", "84816237778082c22bdfc14709886f38563891c0735e806c874202f9ff363396"],
   ["assets/mathjax-config.js", "2937d2527e5e30d9698ef8c1f7a9f26aab64ed49a4d6ec2b4e9fc5d638187c35"],
   ["assets/mathjax/tex-svg.js", "d4295dc33744836935c1399feece5159577b34c5c8ffb9f1c6324cd82e03a882"],
 ]);
@@ -126,7 +129,7 @@ export function buildVlnCatalog({ sourcePath, outputDir, post, headerHtml }) {
     fs.mkdirSync(path.dirname(destination), { recursive: true });
     fs.copyFileSync(asset.input, destination);
   }
-  fs.writeFileSync(path.join(outputDir, "index.html"), isE2e ? finalHtml.replace('<html lang="zh-CN">', '<html lang="zh-CN" class="no-js">').replaceAll('v=20261006', 'v=20261009') : finalHtml);
+  fs.writeFileSync(path.join(outputDir, "index.html"), isE2e ? finalHtml.replace('<html lang="zh-CN">', '<html lang="zh-CN" class="no-js">').replaceAll('v=20261006', 'v=20261009') : finalHtml.replaceAll('v=20261006', 'v=20261009-agentic'));
   fs.writeFileSync(path.join(outputDir, "catalog.css"), styles.join("\n") + "\n" + fs.readFileSync(path.join(toolsDir, "vln-catalog.css"), "utf8") + (isE2e ? "\n" + fs.readFileSync(path.join(toolsDir, "e2e-vln.css"), "utf8") : ""));
   fs.writeFileSync(path.join(outputDir, "catalog.js"), scripts.filter((match) => !match[1].includes('application/json')).map((match) => match[2]).join("\n") + '\n// Handle already-failed lazy images as well as future error events.\ndocument.querySelectorAll("figure img").forEach((image) => { if (image.complete && !image.naturalWidth) { const fallback = image.closest("figure").querySelector(".image-fallback"); if (fallback) fallback.hidden = false; } });\n');
   return { papers: [...body.matchAll(/<article\b/g)].length, assets: assets.map((asset) => asset.relative), omittedAssets, output: path.join(outputDir, "index.html") };

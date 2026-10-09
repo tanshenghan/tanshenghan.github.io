@@ -16,6 +16,7 @@ assert.ok(post, "VLN Voyager Part 01 must remain registered");
 assert.equal(post.title, "Agentic VLN");
 assert.equal(post.number, "01");
 assert.equal(post.format, "catalog");
+assert.equal(post.source, "agentic-vln/Agentic_VLN.html");
 
 const sourceFile = path.join(toolsDir, "content", post.source);
 const articleFile = path.join(blogDir, post.seriesSlug, post.slug, "index.html");
@@ -91,21 +92,21 @@ assert.match(textContent(article), /PART\s*01/i, "article must visibly identify 
 assert.ok(links(article).includes("../"), "article needs a return-to-series link");
 assert.ok(links(article).includes("../../"), "article needs a return-to-blog link");
 assert.ok(links(article).includes("../../../"), "article needs a homepage link");
-for (const phrase of ["统一实验结果表", "Agentic VLN 增加的能力", "详细阅读", "设计哲学", "训练边界", "未复现实验"]) {
+for (const phrase of ["统一实验结果表", "如何理解 Agentic VLN", "详细阅读", "Workflow", "Harness", "训练边界"]) {
   assert.ok(textContent(article).includes(phrase), `the original Chinese catalog must retain ${phrase}`);
 }
 
 const sourcePapers = elements(source, "article", /^paper-\d+$/);
 const outputPapers = elements(article, "article", /^paper-\d+$/);
 const expectedPaperIds = sourcePapers.map((paper) => paper.attrs.id);
-assert.equal(sourcePapers.length, 54, "reviewed snapshot contains 54 chronologically ordered papers");
+assert.equal(sourcePapers.length, 28, "reviewed snapshot contains 28 curated papers");
 assert.deepEqual(outputPapers.map((paper) => paper.attrs.id), expectedPaperIds, "publishing must not drop or reorder papers");
 sourcePapers.forEach((original, i) => {
   const rendered = outputPapers[i];
   const label = original.attrs.id;
   assert.equal(textContent(rendered.content), textContent(original.content), `${label}: complete visible article text must remain unchanged`);
   assert.deepEqual(tableData(rendered.content), tableData(original.content), `${label}: component tables must remain unchanged`);
-  assert.deepEqual(JSON.parse(rendered.attrs["data-search"]), JSON.parse(original.attrs["data-search"]), `${label}: all original structured search data must remain unchanged`);
+  assert.deepEqual(rendered.attrs, original.attrs, `${label}: paper metadata must remain unchanged; search derives from visible text`);
   assert.equal(rendered.attrs["data-collection"], original.attrs["data-collection"], `${label}: original/new collection grouping must remain unchanged`);
   assert.deepEqual(links(rendered.content), links(original.content), `${label}: original papers, figures and result links must remain unchanged`);
   assert.deepEqual(imageSources(rendered.content), imageSources(original.content), `${label}: original figure sources must remain unchanged`);
@@ -113,7 +114,7 @@ sourcePapers.forEach((original, i) => {
 
 const sourceRows = elements(source, "tr", /^result-\d+-\d+$/);
 const outputRows = elements(article, "tr", /^result-\d+-\d+$/);
-assert.equal(sourceRows.length, 113, "source snapshot must contain 113 result rows");
+assert.equal(sourceRows.length, 61, "source snapshot must contain 61 result rows");
 assert.deepEqual(outputRows.map((row) => row.attrs.id), sourceRows.map((row) => row.attrs.id), "all experimental results must remain in order");
 sourceRows.forEach((original, i) => {
   const rendered = outputRows[i];
@@ -123,11 +124,15 @@ sourceRows.forEach((original, i) => {
 });
 
 const originalImages = imageSources(source);
-assert.equal(originalImages.length, 57, "catalog must retain all figures and supplementary flowcharts");
+assert.equal(originalImages.length, 32, "catalog must retain all figures and supplementary flowcharts");
 const remoteImages = originalImages.filter((url) => /^https?:\/\//.test(url));
-assert.equal(remoteImages.length, 40, "40 original online figures must remain attributed and linked");
+assert.equal(remoteImages.length, 0, "the updated catalog uses locally hosted figures");
 assert.deepEqual(imageSources(article).filter((url) => /^https?:\/\//.test(url)), remoteImages, "all remote figures must retain their original URLs");
-assert.ok(article.includes("版权归论文作者"), "figure copyright attribution must remain visible");
+assert.deepEqual(elements(article, 'figcaption', /.*/).map(x => textContent(x.content)), elements(source, 'figcaption', /.*/).map(x => textContent(x.content)), "all source figure captions and attribution remain visible");
+assert.deepEqual(imageSources(article), originalImages, "all 32 local figures, including the overview framework, remain present");
+const reviewedRuntime = fs.readFileSync(path.join(toolsDir, 'content/agentic-vln/assets/vln-catalog.js'), 'utf8');
+assert.equal(fs.readFileSync(path.join(path.dirname(articleFile), 'assets/vln-catalog.js'), 'utf8'), reviewedRuntime, "reviewed filter/export runtime is copied verbatim");
+assert.equal(fs.readFileSync(path.join(path.dirname(articleFile), 'vln-experiment-results.csv'), 'utf8'), fs.readFileSync(path.join(path.dirname(sourceFile), 'vln-experiment-results.csv'), 'utf8'), "original CSV stays available without JavaScript");
 
 const htmlCache = new Map([[indexFile, index], [seriesFile, series], [articleFile, article]]);
 const idCache = new Map();

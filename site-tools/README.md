@@ -46,9 +46,9 @@ npm test
 
 文章地址：`/blog/vln-voyager/agentic-vln/`，显示标题为「Agentic VLN」。
 
-- 原始 HTML 快照保存在 `content/agentic-vln/vln-paper-catalog.html`，本地框架图保存在同目录 `pic/` 下；构建和发布不依赖工作区之外的原文件。
-- `posts.json` 使用 `format: "catalog"`，由独立导入器生成页面，不走 Flow 的 Markdown／公式模板。用 `readingLabel` 显示「54 篇论文 · 可检索文献笔记」，而非整页预计阅读分钟。
-- 2026-10-06 同步最新版：54 篇论文、113 条实验结果、57 张图片（17 张本地图片）。保留原目录时间顺序、年份／多标签筛选、数值排序、开源状态标识与侧边目录；图片保持原始出处，远程图片保留加载失败提示。
+- HTML 快照已改名为 `content/agentic-vln/Agentic_VLN.html`，本地框架图保存在同目录 `pic/` 下；构建和发布不依赖工作区之外的原文件。公开文章地址仍为 `/blog/vln-voyager/agentic-vln/`，不破坏现有入口与第二章链接。
+- `posts.json` 使用 `format: "catalog"`，由独立导入器生成页面，不走 Flow 的 Markdown／公式模板。用 `readingLabel` 显示「28 篇论文 · 可检索文献笔记」，而非整页预计阅读分钟。
+- 2026-10-09 同步最新精编版：28 篇论文、61 条实验结果、32 张本地图片，包含 Agentic VLN 总览框架图。保留原目录顺序、年份／多标签筛选、数值排序与侧边目录；图片保持原始出处。`assets/vln-catalog.js` 按哈希校验后原样托管，搜索直接基于可见正文，CSV 下载基于当前表格，另保留原始 CSV 离线文件。
 - 本地 MathJax 配置、渲染器与许可证位于 `content/agentic-vln/assets/`，构建时校验脚本摘要并随文章部署，支持 TeX 渲染和原生 MathML 回退。原始检索数据中的两处本机 PDF 绝对路径仅保留文件名，避免公开私人目录。
 - 原文件引用的 CSV、Markdown、JSON 附件并未提供，发布页面不显示这些失效下载入口。
 - 如需更新此篇，替换快照和相关本地资源后重新构建并运行测试。导入器会检查脚本安全；若原目录的交互代码发生变化，需要先审查代码再更新导入规则。
