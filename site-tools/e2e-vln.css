@@ -1,0 +1,11 @@
+/* Integration only: retain the source catalog's research and responsive grids. */
+.columns > *, .scope-grid > *, .flow-summary > * { min-width: 0; }
+.vln-previous { margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--line); font-size: 14px; }
+.vln-previous a { text-decoration: none; }
+.directory-shade { z-index: 49; }
+.keyfacts { grid-template-columns: 105px minmax(0, 1fr); }
+@media (max-width: 700px) {
+  .keyfacts { grid-template-columns: minmax(0, 1fr); }
+  .count { white-space: normal; }
+  .paper { padding: 24px 14px; }
+}

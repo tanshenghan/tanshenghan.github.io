@@ -56,6 +56,12 @@ npm test
 
 ## 本地预览与发布
 
+### VLN Voyager · Part 02 · 端到端VLN
+
+地址 `/blog/vln-voyager/e2e-vln/`。原始快照位于 `content/e2e-vln/e2e_vln_paper.html`，使用 `format: "catalog"` 与 `catalogKind: "e2e"`。
+
+保留原文 25 篇模型解析、74 条实验记录、23 张有出处的远程架构图，以及内嵌 JSON 数据。搜索、年份／架构／训练代码状态／标签筛选、实验排序、独立目录与 JSON／筛选结果 CSV 导出沿用经审查的原始脚本。图片不可用时显示原文回退提示，不改写研究结论。原 train-free 目录链接指向 Part 01。专用布局补丁位于 `e2e-vln.css`，不影响第一章。
+
 ### 套牢研究 · 宝丰能源分析
 
 系列地址：`/blog/taolao-research/`；首篇文章：`/blog/taolao-research/baofeng-energy/`。

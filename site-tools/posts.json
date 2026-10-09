@@ -31,6 +31,22 @@
     "readingLabel": "54 篇论文 · 可检索文献笔记"
   },
   {
+    "title": "端到端VLN",
+    "author": "shong Tan",
+    "slug": "e2e-vln",
+    "series": "VLN Voyager",
+    "seriesSlug": "vln-voyager",
+    "number": "02",
+    "date": "2026-10-09",
+    "description": "梳理 25 篇 LLM / VLM 驱动的导航模型，逐篇拆解架构、动作输出与训练流程，结合 74 条原文实验记录区分训练边界与评测协议。支持搜索筛选、指标排序及数据导出。",
+    "subtitle": "从模型架构到导航策略：训练什么、怎样训练、能否自己训练。",
+    "tags": ["End-to-End VLN", "VLM", "模型架构", "训练流程"],
+    "format": "catalog",
+    "catalogKind": "e2e",
+    "source": "e2e-vln/e2e_vln_paper.html",
+    "readingLabel": "25 篇模型解析 · 74 条实验记录"
+  },
+  {
     "title": "宝丰能源分析",
     "author": "shong Tan",
     "slug": "baofeng-energy",

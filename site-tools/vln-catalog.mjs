@@ -14,6 +14,8 @@ const reviewedScripts = new Set([
   "50b39108d5eab9bd29588e9ca3bcd455636e0bce59ee68aeac401a62386fefed",
   // Reviewed 2026-10-06: local year/tag filters, numeric sorting and directory.
   "905a9bb853979287d2d0578e9b4e14f97b849034579249c7dc94c6c95c386487",
+  // Reviewed 2026-10-09: E2E catalog filters/sorting, drawer, local JSON/CSV export.
+  "1d1345ece42f8fb84b5b945e8b2ee3ac46cc73003a4f025b06fd851c142fad9f",
 ]);
 const reviewedDependencies = new Map([
   ["assets/mathjax-config.js", "2937d2527e5e30d9698ef8c1f7a9f26aab64ed49a4d6ec2b4e9fc5d638187c35"],
@@ -25,10 +27,15 @@ const allowedAsset = /\.(?:png|jpe?g|webp|gif|svg|avif|csv|json|md|pdf)$/i;
 /** Adapt the reviewed, self-contained survey without rewriting its research. */
 export function buildVlnCatalog({ sourcePath, outputDir, post, headerHtml }) {
   const source = fs.readFileSync(sourcePath, "utf8");
+  const isE2e = post.catalogKind === "e2e";
   const sourceDir = fs.realpathSync(path.dirname(sourcePath));
   const scripts = [...source.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)];
   const dependencies = [];
   for (const [, attributes, script] of scripts) {
+    if (isE2e && attributes.trim() === 'id="paper-data" type="application/json"') {
+      if (!Array.isArray(JSON.parse(script))) throw new Error("Expected E2E paper data array.");
+      continue;
+    }
     const src = attributes.match(/\bsrc="([^"]+)"/)?.[1];
     if (src && reviewedDependencies.has(src) && !script.trim() &&
         !attributes.replace(/\bsrc="[^"]+"|\bid="MathJax-script"|\bdefer/g, "").trim()) {
@@ -53,7 +60,7 @@ export function buildVlnCatalog({ sourcePath, outputDir, post, headerHtml }) {
   }
   let body = source.match(/<body\b[^>]*>([\s\S]*?)<\/body>/i)?.[1];
   if (!body || !/<main id="top">/.test(body)) throw new Error("The VLN catalog document structure changed.");
-  body = body.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, "");
+  body = body.replace(/<script\b([^>]*)>[\s\S]*?<\/script>/gi, (tag, attributes) => isE2e && attributes.trim() === 'id="paper-data" type="application/json"' ? tag : "");
   // The October snapshot omitted the results section's closing tag. Keep
   // reading/catalog sections as siblings without changing research content.
   body = body.replace(/(<p class="empty" id="result-empty"[^>]*>[\s\S]*?<\/p>)(\s*<section id="reading")/, '$1</section>$2');
@@ -64,6 +71,7 @@ export function buildVlnCatalog({ sourcePath, outputDir, post, headerHtml }) {
   const omittedAssets = [];
   for (const reference of references) {
     const url = decode(reference);
+    if (isE2e && url === "vln-paper-catalog.html") continue;
     if (/^(?:https?:\/\/|#|mailto:)/i.test(url)) continue;
     const relative = decodeURIComponent(url.split(/[?#]/)[0]);
     const parts = relative.split(/[\\/]/);
@@ -95,6 +103,7 @@ export function buildVlnCatalog({ sourcePath, outputDir, post, headerHtml }) {
   }
   body = body.replace(/<img\b([^>]*)>/gi, (_, attributes) => '<img' + attributes.replace(/\s+(?:loading|decoding)=["'][^"']*["']/gi, "") + ' loading="lazy" decoding="async">');
   body = body.replace("悬停展开 · 移开收起", "悬停或点击展开 · Esc 收起");
+  if (isE2e) body = body.replaceAll('href="vln-paper-catalog.html"', 'href="../agentic-vln/"');
 
   const number = String(post.number || "01").padStart(2, "0");
   const date = post.date || "2026-09-30";
@@ -102,7 +111,8 @@ export function buildVlnCatalog({ sourcePath, outputDir, post, headerHtml }) {
   const intro = '<div id="main" tabindex="-1"></div><nav class="vln-breadcrumbs" aria-label="面包屑"><a href="../../">BLOG</a><span>/</span><a href="../">' + escape(post.series) + '</a><span>/</span><span>Part ' + number + '</span></nav><header class="vln-heading"><p class="vln-eyebrow">' + escape(post.series) + ' / PART ' + number + '</p><h1>' + escape(post.title) + '</h1><p class="vln-subtitle">' + escape(post.description) + '</p><div class="vln-meta"><span>' + escape(post.author || "shong Tan") + '</span><time datetime="' + escape(date) + '">' + escape(date.replaceAll("-", ".")) + '</time><span>中文笔记 · 论文调研</span></div></header>';
   body = body.replace('<main id="top">', '<main id="top" class="vln-main">' + intro);
   if (post.updated) body = body.replace('<span>中文笔记 · 论文调研</span>', '<span>更新于 <time datetime="' + escape(post.updated) + '">' + escape(post.updated.replaceAll("-", ".")) + '</time></span><span>中文笔记 · 论文调研</span>');
-  body = body.replace(/<div class="eyebrow">([^<]*)<\/div><h1>([\s\S]*?)<\/h1>/, '<div class="vln-source-intro"><p class="eyebrow">$1</p><p class="vln-original-title">$2</p></div>');
+  body = body.replace(/<div class="eyebrow">([^<]*)<\/div>\s*<h1>([\s\S]*?)<\/h1>/, '<div class="vln-source-intro"><p class="eyebrow">$1</p><p class="vln-original-title">$2</p></div>');
+  if (isE2e) body = body.replace('</main>', '<nav class="vln-previous" aria-label="上一篇"><a href="../agentic-vln/">← Part 01 · Agentic VLN</a></nav></main>');
   body = body.replace('</main>', '<nav class="vln-article-end" aria-label="继续阅读"><a href="../">← ' + escape(post.series) + '</a><a href="../../">全部技术博客 →</a></nav></main>');
   if (/file:\/\/|\/Users\//i.test(body)) throw new Error("A local-machine path would be exposed in the generated VLN page.");
 
@@ -116,8 +126,8 @@ export function buildVlnCatalog({ sourcePath, outputDir, post, headerHtml }) {
     fs.mkdirSync(path.dirname(destination), { recursive: true });
     fs.copyFileSync(asset.input, destination);
   }
-  fs.writeFileSync(path.join(outputDir, "index.html"), finalHtml);
-  fs.writeFileSync(path.join(outputDir, "catalog.css"), styles.join("\n") + "\n" + fs.readFileSync(path.join(toolsDir, "vln-catalog.css"), "utf8"));
-  fs.writeFileSync(path.join(outputDir, "catalog.js"), scripts.map((match) => match[2]).join("\n") + '\n// Handle already-failed lazy images as well as future error events.\ndocument.querySelectorAll("figure img").forEach((image) => { if (image.complete && !image.naturalWidth) { const fallback = image.closest("figure").querySelector(".image-fallback"); if (fallback) fallback.hidden = false; } });\n');
+  fs.writeFileSync(path.join(outputDir, "index.html"), isE2e ? finalHtml.replace('<html lang="zh-CN">', '<html lang="zh-CN" class="no-js">').replaceAll('v=20261006', 'v=20261009') : finalHtml);
+  fs.writeFileSync(path.join(outputDir, "catalog.css"), styles.join("\n") + "\n" + fs.readFileSync(path.join(toolsDir, "vln-catalog.css"), "utf8") + (isE2e ? "\n" + fs.readFileSync(path.join(toolsDir, "e2e-vln.css"), "utf8") : ""));
+  fs.writeFileSync(path.join(outputDir, "catalog.js"), scripts.filter((match) => !match[1].includes('application/json')).map((match) => match[2]).join("\n") + '\n// Handle already-failed lazy images as well as future error events.\ndocument.querySelectorAll("figure img").forEach((image) => { if (image.complete && !image.naturalWidth) { const fallback = image.closest("figure").querySelector(".image-fallback"); if (fallback) fallback.hidden = false; } });\n');
   return { papers: [...body.matchAll(/<article\b/g)].length, assets: assets.map((asset) => asset.relative), omittedAssets, output: path.join(outputDir, "index.html") };
 }
