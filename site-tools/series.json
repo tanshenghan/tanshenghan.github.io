@@ -6,9 +6,9 @@
     "art": "flow"
   },
   "vln-voyager": {
-    "description": "从 Agentic VLN 出发，探索具身导航中的规划、记忆、工具调用与执行反馈。",
-    "intro": "把导航看作一个持续观察、记忆、决策与行动的过程。",
-    "metaDescription": "VLN Voyager：视觉语言导航与具身智能的技术笔记，从 Agentic VLN 的论文、设计哲学和实验对照开始。",
+    "description": "回顾导航系统的演进，研究自主探索与持续记忆的协同机制，探索兼具语义指令遵循与安全避障能力的下一代视觉语言导航系统。",
+    "intro": "回顾导航系统的演进，研究自主探索与持续记忆的协同机制，探索兼具语义指令遵循与安全避障能力的下一代视觉语言导航系统。",
+    "metaDescription": "VLN Voyager：回顾导航系统的演进，研究自主探索与持续记忆的协同机制，探索兼具语义指令遵循与安全避障能力的下一代视觉语言导航系统。",
     "art": "navigation"
   },
   "taolao-research": {
