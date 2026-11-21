@@ -36,6 +36,8 @@ npm test
 
 当前文章地址：`/blog/flow-matching/flow-random-variables-deterministic-markov/`。
 
+企业研究使用同一 Markdown 构建流程。宝丰能源文章源码为 `content/baofeng-energy.md`，生成地址为 `/blog/company-research/baofeng-energy/`。研究数据需标明报告期与来源，结论区分事实、测算和情景假设；计划产能、有效产能和产量不可混用。
+
 首篇现标题为「从 Flow ，Velocity Field 到 CNF」，为保持外链可用，沿用原地址。可用 `updated` 字段显示修订日期。
 
 交互图由 `flow-visuals.mjs` 生成静态 SVG，浏览器逻辑与解析函数在 `blog/flow-visuals.js`，样式在 `blog/flow-visuals.css`。Markdown 使用 `<!-- affine-demo -->`、`<!-- continuity-demo -->`、`<!-- cnf-training-demo -->` 插入。构建和浏览器共用计算函数，部署时需同步这些文件。
@@ -54,34 +56,13 @@ npm test
 - 如需更新此篇，替换快照和相关本地资源后重新构建并运行测试。导入器会检查脚本安全；若原目录的交互代码发生变化，需要先审查代码再更新导入规则。
 - `test-vln-blog.mjs` 检查系列顺序、论文与实验内容完整性、本地资源、锚点及导航；原有 `test-blog.mjs` 继续保护 Flow 文章与数学交互。
 
-## 本地预览与发布
-
-### VLN Voyager · Part 02 · 端到端VLN
+## VLN Voyager · Part 02 · 端到端VLN
 
 地址 `/blog/vln-voyager/e2e-vln/`。原始快照位于 `content/e2e-vln/e2e_vln_paper.html`，使用 `format: "catalog"` 与 `catalogKind: "e2e"`。
 
 保留原文 25 篇模型解析、74 条实验记录、23 张有出处的远程架构图，以及内嵌 JSON 数据。搜索、年份／架构／训练代码状态／标签筛选、实验排序、独立目录与 JSON／筛选结果 CSV 导出沿用经审查的原始脚本。图片不可用时显示原文回退提示，不改写研究结论。原 train-free 目录链接指向 Part 01。专用布局补丁位于 `e2e-vln.css`，不影响第一章。
 
-### 套牢研究 · 宝丰能源分析
-
-系列地址：`/blog/taolao-research/`；首篇文章：`/blog/taolao-research/baofeng-energy/`。
-
-- 原始单文件报告快照位于 `content/baofeng-energy/report.html`，无需依赖 Downloads 目录。
-- `posts.json` 使用 `format: "standalone-report"`；`standalone-report.mjs` 保留原始样式、数据、模型脚本与来源链接，仅更新文章标题并增加 BLOG／系列／个人主页导航。
-- 保留原报告研究日期及数据口径，不抓取实时行情、不改写数据或投资判断；情景测算不是公司预测或投资建议。
-- 更新报告时替换快照并构建；若交互脚本变化，需要先审查再更新导入器中的 SHA-256 白名单。`test-stock-blog.mjs` 检查内容和交互脚本是否保持一致、目录顺序与导航是否有效。
-
-### 预览与发布方式
-
-“套牢研究”第二篇为「顺丰控股分析」，地址 `/blog/taolao-research/sf-holding/`。原始单文件快照为 `content/sf-holding/report.html`，同样使用 `standalone-report` 导入，保留十年财务、业务图表、分部利润与数据导出。只更新博客标题和返回导航，不改写原始财务内容；测试同时保护宝丰能源与顺丰两篇报告。
-
-### 套牢研究 · 全集更新（2026-10-09）
-
-现有 11 篇报告：宝丰能源、顺丰控股、珀莱雅、峰岹科技、嘉友国际、中国太保、赛轮轮胎、迈瑞医疗、信达生物、美的集团、招商银行。前两篇地址与编号保持不变，新报告接续为 03–11。原报告的研究日期与行情截止日期保留，博客日期表示发布／更新时间，不代表实时行情。
-
-`posts.json` 中的 `importFilename` 对应输入目录顶层的报告，`source` 对应仓库快照。更新时运行 `node import-stock-reports.mjs <报告目录>`，再执行 `npm run build` 和 `npm test`。可通过 `STOCK_SOURCE_DIR=<报告目录> node test-stock-blog.mjs` 额外核验输入文件一致性。不会递归导入 backup、research、source 等目录。
-
-导入只将 JSON 数据中的本机绝对路径改为来源文件名，保留所有数值、公开来源链接、正文、原样式和交互脚本。原始输入文件不变。脚本更新须重新审查白名单；测试验证全部报告的完整性、目录顺序及本地链接，不验证财务分析结论。
+## 本地预览与发布
 
 在本地大工作区根目录运行 `python3 -m http.server 4173 --directory docs`；在独立 GitHub Pages 仓库根目录运行 `python3 -m http.server 4173`。
 打开 `http://localhost:4173/blog/`。构建无需在 GitHub 上运行，提交生成后的 HTML、CSS、JS、字体和源码即可。

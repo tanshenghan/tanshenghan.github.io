@@ -302,8 +302,32 @@ button, a, summary, input { -webkit-tap-highlight-color: transparent; }
 .gaussian-legend i.initial { border-top: 2px dashed var(--muted); }
 .gaussian-legend .drag-hint { margin-left: auto; color: var(--blue); }
 .gaussian-demo button:disabled, .gaussian-demo input:disabled { opacity: .55; cursor: default; }
+.research-verdict { margin: 0 0 30px; padding: 26px 28px; border: 1px solid var(--line); border-left: 4px solid var(--blue); background: var(--surface); }
+.research-verdict h3 { margin: 6px 0 10px; font-size: 24px; line-height: 1.5; }
+.research-verdict p { margin: 0; }
+.research-kicker { color: var(--blue); font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; margin: 24px 0 40px; background: var(--line); border: 1px solid var(--line); }
+.metric { display: flex; min-width: 0; flex-direction: column; gap: 5px; padding: 18px 14px; background: var(--surface); }
+.metric span, .metric small { color: var(--muted); font-size: 10px; }
+.metric strong { color: var(--text); font-size: 18px; line-height: 1.35; }
+.business-chain { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 26px 0; padding: 18px; border: 1px solid var(--line); font-size: 12px; }
+.business-chain span { padding: 7px 10px; background: var(--surface-2); }
+.business-chain b { color: var(--blue); }
+.signal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 26px 0; }
+.signal-card { padding: 22px; border: 1px solid var(--line); background: var(--surface); }
+.signal-card > span { color: var(--blue); font-size: 9px; font-weight: 700; letter-spacing: .14em; }
+.signal-card h3 { margin: 8px 0; }
+.signal-card p { margin: 0; font-size: 14px; }
+.prose img[alt*="宝丰能源"] { display: block; width: 100%; margin: 22px 0 8px; border: 1px solid var(--line); background: #fff; }
+.disclaimer { margin-top: 28px; padding: 18px 20px; border-top: 1px solid var(--line); background: var(--surface); color: var(--muted); font-size: 12px; }
+.disclaimer p { margin: 5px 0 0; font-size: inherit; }
 @media (max-width: 500px) {
   .gaussian-legend { font-size: 10px; gap: 8px 14px; }
   .gaussian-legend .drag-hint { display: none; }
   .gaussian-demo .demo-labels { font-size: 18px; }
+  .research-verdict { padding: 20px; }
+  .research-verdict h3 { font-size: 20px; }
+  .metric-grid, .signal-grid { grid-template-columns: 1fr 1fr; }
+  .business-chain { flex-wrap: wrap; justify-content: flex-start; }
+  .business-chain b { transform: rotate(90deg); }
 }

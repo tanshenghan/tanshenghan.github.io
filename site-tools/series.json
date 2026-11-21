@@ -11,10 +11,10 @@
     "metaDescription": "VLN Voyager：回顾导航系统的演进，研究自主探索与持续记忆的协同机制，探索兼具语义指令遵循与安全避障能力的下一代视觉语言导航系统。",
     "art": "navigation"
   },
-  "taolao-research": {
-    "description": "围绕企业经营、财报与情景模型，记录分析过程和风险边界。",
-    "intro": "从业务出发，用财报与模型检验自己的判断。",
-    "metaDescription": "套牢研究：11 篇企业经营、财务结构与情景分析笔记，覆盖能源、物流、消费、科技、医疗与金融。",
-    "art": "none"
+  "company-research": {
+    "description": "从商业模式、产业周期和现金回报出发，建立可以被证伪的企业判断。",
+    "intro": "不从目标价开始，先回答企业怎样赚钱、利润能否留下。",
+    "metaDescription": "企业研究：从商业模式、产业周期、自由现金流与估值边界理解上市公司。",
+    "art": "industry"
   }
 }

@@ -6,7 +6,6 @@ import katex from "katex";
 import { cnfVisuals } from "./flow-visuals.mjs";
 import { gaussianDemo } from "./gaussian-demo.mjs";
 import { buildVlnCatalog } from "./vln-catalog.mjs";
-import { buildStandaloneReport } from "./standalone-report.mjs";
 
 const toolsDir = path.dirname(fileURLToPath(import.meta.url));
 // Support both the local docs/ workspace and the root-based GitHub Pages repo.
@@ -16,7 +15,7 @@ const siteDir = process.env.SITE_OUTPUT_DIR
 const outputDir = path.join(siteDir, "blog");
 const posts = JSON.parse(fs.readFileSync(path.join(toolsDir, "posts.json"), "utf8"));
 const seriesMetadata = JSON.parse(fs.readFileSync(path.join(toolsDir, "series.json"), "utf8"));
-const version = "20260918-continuity-columns-4";
+const version = "20261114-company-research-2";
 const escape = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 const formula = (tex, displayMode = false) => katex.renderToString(tex, { displayMode, throwOnError: true, output: "htmlAndMathml", strict: "error" });
 const articlePath = (post) => post.seriesSlug + "/" + post.slug + "/";
@@ -36,14 +35,24 @@ function flowArt() {
   return '<svg class="flow-art" viewBox="0 0 540 230" role="img" aria-label="由不同起点出发，沿同一 flow 连续运输的轨迹示意图"><g class="flow-lines">' + curves + '</g><g class="flow-labels"><text x="30" y="216">INITIAL STATE</text><text x="226" y="216">CONTINUOUS FLOW</text><text x="463" y="216">STATE t</text></g></svg>';
 }
 
+function industryArt() {
+  return '<svg class="flow-art" viewBox="0 0 540 230" role="img" aria-label="从煤炭成本、产能利用率与产品价差流向自由现金流的企业分析框架"><g fill="none" stroke="var(--line)" stroke-width="1"><path d="M30 48H510M30 106H510M30 164H510"/></g><g fill="var(--surface)" stroke="var(--blue)" stroke-width="2"><rect x="38" y="72" width="92" height="58" rx="4"/><rect x="224" y="72" width="92" height="58" rx="4"/><rect x="410" y="72" width="92" height="58" rx="4"/></g><g fill="none" stroke="var(--blue)" stroke-width="2"><path d="M130 101H224M316 101H410"/><path d="m212 94 12 7-12 7M398 94l12 7-12 7"/></g><g class="flow-labels" style="font-size:10px"><text x="60" y="96">COAL COST</text><text x="58" y="115">煤炭成本</text><text x="245" y="96">SPREAD</text><text x="244" y="115">产品价差</text><text x="429" y="96">CASH FLOW</text><text x="430" y="115">自由现金流</text><text x="187" y="202">CAPACITY × MARGIN × CAPITAL DISCIPLINE</text></g></svg>';
+}
+
 function header(home, blog, isArticle) {
   return '<a class="skip" href="#main">跳至正文</a><header class="blog-header"><div class="header-inner"><a class="blog-brand" href="' + home + '"><span class="seal" aria-hidden="true"></span><span>谭圣涵<small>SHENGHAN TAN</small></span></a><nav aria-label="站点导航"><a href="' + home + '">主页</a><a class="nav-current" href="' + blog + '" aria-current="' + (isArticle ? "false" : "page") + '">BLOG</a><button class="blog-theme" type="button" aria-label="切换深浅色主题" aria-pressed="false"><span aria-hidden="true">◐</span></button></nav></div></header><div class="reading-progress" aria-hidden="true"><span></span></div>';
 }
 
 function seriesArt(slug) {
   if (seriesMetadata[slug]?.art === "none") return "";
+  if (seriesMetadata[slug]?.art === "industry") return industryArt();
   if (seriesMetadata[slug]?.art !== "navigation") return flowArt();
   return '<svg class="flow-art" viewBox="0 0 540 230" role="img" aria-label="导航闭环：观察环境、更新记忆、规划路径、执行行动，再返回观察"><g fill="none" stroke="var(--line)" stroke-width="1"><path d="M30 38H510M30 78H510M30 118H510M30 158H510M30 198H510M70 20V210M170 20V210M270 20V210M370 20V210M470 20V210" /></g><path d="M70 138L180 138L290 78L440 78" fill="none" stroke="var(--blue)" stroke-width="2.4" /><path d="M440 78V178H70V138" fill="none" stroke="var(--blue)" stroke-width="1.2" stroke-dasharray="4 5" opacity=".55" /><path d="M82 170L70 178L82 186" fill="none" stroke="var(--blue)" stroke-width="1.5" /><g fill="var(--surface)" stroke="var(--blue)" stroke-width="2"><circle cx="70" cy="138" r="6" /><circle cx="180" cy="138" r="6" /><circle cx="290" cy="78" r="6" /><circle cx="440" cy="78" r="6" /></g><g class="flow-labels" style="font-size:10px"><text x="40" y="116">OBSERVE</text><text x="158" y="116">MEMORY</text><text x="277" y="56">PLAN</text><text x="428" y="56">ACT</text><text x="204" y="201">FEEDBACK → NEXT STEP</text></g></svg>';
+}
+
+function articleArt(post) {
+  if (post.seriesSlug === "company-research") return industryArt() + '<p>CAPACITY.<br>SPREAD.<br>CASH FLOW.</p>';
+  return flowArt() + '<p>ONE VECTOR FIELD.<br>MANY INITIAL STATES.</p>';
 }
 
 function shell({ title, description, relative, body, canonical, article = false }) {
@@ -58,11 +67,11 @@ function teaser(post, prefix) {
 }
 
 const series = [...new Set(posts.map((p) => p.seriesSlug))];
-const indexBody = '<main id="main" class="index-shell"><div id="top"></div><section class="index-hero"><div><p class="eyebrow">NOTES ON LEARNING & BUILDING</p><h1>BLOG<span class="blue-dot">.</span></h1><p class="index-intro">把理解写下来，<br>让问题继续向前。</p><p class="index-description">关于生成模型、具身智能与企业分析的研究笔记。</p></div><div class="index-art">' + flowArt() + '<span>IDEAS IN MOTION</span></div></section><section class="index-series"><div class="listing-heading"><h2>按系列阅读</h2><span>' + series.length + ' 个系列 / ' + posts.length + ' 篇笔记</span></div>' + series.map((slug) => {
+const indexBody = '<main id="main" class="index-shell"><div id="top"></div><section class="index-hero"><div><p class="eyebrow">NOTES ON LEARNING & BUILDING</p><h1>BLOG<span class="blue-dot">.</span></h1><p class="index-intro">把理解写下来，<br>让问题继续向前。</p><p class="index-description">关于生成模型、具身智能与企业研究的笔记。</p></div><div class="index-art">' + flowArt() + '<span>IDEAS IN MOTION</span></div></section><section class="index-series"><div class="listing-heading"><h2>按系列阅读</h2><span>' + series.length + ' 个系列 / ' + posts.length + ' 篇笔记</span></div>' + series.map((slug) => {
   const list = posts.filter((p) => p.seriesSlug === slug);
   return '<div class="series-line"><div><span class="eyebrow">SERIES ' + String(series.indexOf(slug) + 1).padStart(2, "0") + '</span><h2><a href="' + slug + '/">' + escape(list[0].series) + ' <span aria-hidden="true">↗</span></a></h2><p>' + escape(seriesMetadata[slug].description) + '</p></div><span class="series-count">' + list.length + ' 篇</span></div>' + list.map((p) => teaser(p, "")).join("");
 }).join("") + '</section></main>';
-fs.writeFileSync(path.join(outputDir, "index.html"), shell({ title: "BLOG · 研究笔记", description: "谭圣涵的博客：生成模型、具身智能与企业分析的研究笔记。", relative: "", body: indexBody, canonical: "" }));
+fs.writeFileSync(path.join(outputDir, "index.html"), shell({ title: "BLOG · 研究笔记", description: "谭圣涵的博客：生成模型与具身智能的研究笔记。", relative: "", body: indexBody, canonical: "" }));
 
 for (const slug of series) {
   const list = posts.filter((p) => p.seriesSlug === slug);
@@ -77,15 +86,6 @@ const strip = '<figure class="concept-strip"><div><span>01 / VELOCITY</span><str
 const actionDiagram = '<figure class="action-diagram"><div class="condition-row"><span>图像</span><span>语言指令</span><span>机器人状态</span><b>固定条件 c ↓</b></div><div class="action-flow"><div><small>NOISE</small><strong>A₀</strong><span>112 维</span></div><p>条件速度场 uθ<br><span>→ ODE 积分 →</span></p><div><small>ACTION CHUNK</small><strong>A₁</strong><span>16 步 × 7 维</span></div></div><figcaption>被运输的是整个动作块；条件负责影响它如何移动。</figcaption></figure>';
 
 for (const post of posts) {
-  if (post.format === "standalone-report") {
-    const result = buildStandaloneReport({
-      sourcePath: path.join(toolsDir, "content", post.source),
-      outputDir: path.join(outputDir, articlePath(post)),
-      post,
-    });
-    console.log("Built:", articlePath(post), "— imported report", result);
-    continue;
-  }
   if (post.format === "catalog") {
     const result = buildVlnCatalog({
       sourcePath: path.join(toolsDir, "content", post.source),
@@ -119,7 +119,7 @@ for (const post of posts) {
     return '<h2 id="' + id + '">' + title + '</h2>';
   });
   const toc = headings.map((h) => '<a href="#' + h.id + '">' + h.title + '</a>').join("");
-  const body = '<main id="main"><div class="article-shell" id="top"><nav class="breadcrumbs" aria-label="面包屑"><a href="../../">BLOG</a><span>/</span><a href="../">' + escape(post.series) + '</a><span>/</span><span>笔记 ' + post.number + '</span></nav><header class="article-heading"><p class="eyebrow">' + escape(post.series) + ' / NOTE ' + post.number + '</p><h1>' + escape(post.title) + '</h1><p class="article-subtitle">' + escape(post.subtitle || post.description) + '</p><div class="article-meta"><span>' + escape(post.author || "谭圣涵") + '</span><time datetime="' + post.date + '">' + post.date.replaceAll("-", ".") + '</time>' + (post.updated ? '<span>更新于 <time datetime="' + post.updated + '">' + post.updated.replaceAll("-", ".") + '</time></span>' : '') + '<span>' + post.minutes + ' 分钟阅读</span><span>中文笔记</span></div><div class="article-art">' + flowArt() + '<p>ONE VECTOR FIELD.<br>MANY INITIAL STATES.</p></div></header><div class="reading-layout"><aside class="toc-desktop"><p class="eyebrow">ON THIS PAGE</p><nav aria-label="文章目录">' + toc + '</nav><a class="toc-back" href="../">← 返回系列目录</a></aside><div class="reading-column"><details class="toc-mobile"><summary>本文目录 <span>展开 / 收起</span></summary><nav aria-label="移动端文章目录">' + toc + '</nav></details><article class="prose">' + html + '</article><nav class="article-end" aria-label="继续阅读"><a href="../"><small>继续这段旅程</small><strong>' + escape(post.series) + ' <span>↗</span></strong></a><a href="../../">全部技术博客 →</a></nav></div></div></div></main>';
+  const body = '<main id="main"><div class="article-shell" id="top"><nav class="breadcrumbs" aria-label="面包屑"><a href="../../">BLOG</a><span>/</span><a href="../">' + escape(post.series) + '</a><span>/</span><span>笔记 ' + post.number + '</span></nav><header class="article-heading"><p class="eyebrow">' + escape(post.series) + ' / NOTE ' + post.number + '</p><h1>' + escape(post.title) + '</h1><p class="article-subtitle">' + escape(post.subtitle || post.description) + '</p><div class="article-meta"><span>' + escape(post.author || "谭圣涵") + '</span><time datetime="' + post.date + '">' + post.date.replaceAll("-", ".") + '</time>' + (post.updated ? '<span>更新于 <time datetime="' + post.updated + '">' + post.updated.replaceAll("-", ".") + '</time></span>' : '') + '<span>' + post.minutes + ' 分钟阅读</span><span>中文笔记</span></div><div class="article-art">' + articleArt(post) + '</div></header><div class="reading-layout"><aside class="toc-desktop"><p class="eyebrow">ON THIS PAGE</p><nav aria-label="文章目录">' + toc + '</nav><a class="toc-back" href="../">← 返回系列目录</a></aside><div class="reading-column"><details class="toc-mobile"><summary>本文目录 <span>展开 / 收起</span></summary><nav aria-label="移动端文章目录">' + toc + '</nav></details><article class="prose">' + html + '</article><nav class="article-end" aria-label="继续阅读"><a href="../"><small>继续这段旅程</small><strong>' + escape(post.series) + ' <span>↗</span></strong></a><a href="../../">全部研究笔记 →</a></nav></div></div></div></main>';
   const dest = path.join(outputDir, articlePath(post));
   fs.mkdirSync(dest, { recursive: true });
   fs.writeFileSync(path.join(dest, "index.html"), shell({ title: post.title, description: post.description, relative: "../../", body, canonical: articlePath(post), article: true }));
