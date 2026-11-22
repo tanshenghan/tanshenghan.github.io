@@ -57,7 +57,8 @@
     "description": "从公司与行业产能、历年产品—煤炭价差、油价、资产负债和差异化分红出发，重新判断宝丰能源的正常化盈利与估值边界。",
     "subtitle": "它是低成本现金牛，还是仍在扩张中的周期成长公司？",
     "tags": ["宝丰能源", "煤制烯烃", "产能周期", "差异化分红"],
-    "source": "baofeng-energy.md",
+    "format": "html-snapshot",
+    "source": "baofeng-energy.html",
     "minutes": 38
   }
 ]

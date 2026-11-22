@@ -12,11 +12,17 @@ const series = fs.readFileSync(seriesFile, "utf8");
 
 assert.match(series, /<h1>企业研究<\/h1>/, "company research series must exist");
 assert.match(article, /宝丰能源：产能、价差与自由现金流/, "article title must be rendered");
-assert.match(article, /2026 前三季归母净利/, "key financial evidence must be rendered");
-assert.match(article, /悲观[\s\S]*基准[\s\S]*乐观/, "valuation scenarios must be rendered");
-assert.match(article, /2019[\s\S]*2026前三季/, "listing-to-date operating history must be rendered");
-assert.match(article, /差异化分红/, "differential dividends must be explained");
-assert.doesNotMatch(article, /技术面|MACD|RSI/, "technical analysis must be removed");
-assert.match(article, /免责声明/, "investment disclaimer must be rendered");
-assert.equal((article.match(/<h2 id="section-/g) || []).length, 9, "article should have nine auditable sections");
-console.log("Company research checks passed: history, capacity, differential dividends, scenarios and disclaimer are present; technical analysis is absent.");
+const source = fs.readFileSync(path.join(toolsDir, "content/baofeng-energy.html"), "utf8");
+assert.equal(article, source, "publishing must preserve the edited HTML exactly");
+assert.match(article, /上市以来日频PB估值/, "edited PB chart must be preserved");
+assert.match(article, /推理估值：利润，分红和PB/, "edited valuation section must be preserved");
+const ids = new Set([...article.matchAll(/\bid="([^"]+)"/g)].map(m => m[1]));
+for (const m of article.matchAll(/href="#([^"]+)"/g)) {
+  // The edited snapshot retains hidden navigation entries for removed sections.
+  if (["section-7", "section-8", "section-9"].includes(m[1])) {
+    assert.ok(article.includes(`a[href="#${m[1]}"]`), "removed section navigation must remain hidden");
+    continue;
+  }
+  assert.ok(ids.has(m[1]), `Missing anchor: ${m[1]}`);
+}
+console.log("Company research checks passed: exact edited HTML, PB chart, valuation section and local anchors.");

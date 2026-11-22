@@ -36,7 +36,7 @@ npm test
 
 当前文章地址：`/blog/flow-matching/flow-random-variables-deterministic-markov/`。
 
-企业研究使用同一 Markdown 构建流程。宝丰能源文章源码为 `content/baofeng-energy.md`，生成地址为 `/blog/company-research/baofeng-energy/`。研究数据需标明报告期与来源，结论区分事实、测算和情景假设；计划产能、有效产能和产量不可混用。
+宝丰能源采用 `html-snapshot` 格式，源码为 `content/baofeng-energy.html`；构建时原样复制，保留手工编辑的内容、表格与图表。更新时编辑该 HTML 源码。旧 Markdown 保留作历史参考。生成地址为 `/blog/company-research/baofeng-energy/`。研究数据需标明报告期与来源，结论区分事实、测算和情景假设；计划产能、有效产能和产量不可混用。
 
 首篇现标题为「从 Flow ，Velocity Field 到 CNF」，为保持外链可用，沿用原地址。可用 `updated` 字段显示修订日期。
 

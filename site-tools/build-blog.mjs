@@ -86,6 +86,13 @@ const strip = '<figure class="concept-strip"><div><span>01 / VELOCITY</span><str
 const actionDiagram = '<figure class="action-diagram"><div class="condition-row"><span>图像</span><span>语言指令</span><span>机器人状态</span><b>固定条件 c ↓</b></div><div class="action-flow"><div><small>NOISE</small><strong>A₀</strong><span>112 维</span></div><p>条件速度场 uθ<br><span>→ ODE 积分 →</span></p><div><small>ACTION CHUNK</small><strong>A₁</strong><span>16 步 × 7 维</span></div></div><figcaption>被运输的是整个动作块；条件负责影响它如何移动。</figcaption></figure>';
 
 for (const post of posts) {
+  if (post.format === "html-snapshot") {
+    const dest = path.join(outputDir, articlePath(post));
+    fs.mkdirSync(dest, { recursive: true });
+    fs.copyFileSync(path.join(toolsDir, "content", post.source), path.join(dest, "index.html"));
+    console.log("Built:", articlePath(post), "— preserved HTML snapshot");
+    continue;
+  }
   if (post.format === "catalog") {
     const result = buildVlnCatalog({
       sourcePath: path.join(toolsDir, "content", post.source),
