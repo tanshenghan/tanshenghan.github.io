@@ -90,6 +90,9 @@ for (const post of posts) {
     const dest = path.join(outputDir, articlePath(post));
     fs.mkdirSync(dest, { recursive: true });
     fs.copyFileSync(path.join(toolsDir, "content", post.source), path.join(dest, "index.html"));
+    for (const asset of post.assets || []) {
+      fs.copyFileSync(path.join(toolsDir, "content", asset), path.join(dest, path.basename(asset)));
+    }
     console.log("Built:", articlePath(post), "— preserved HTML snapshot");
     continue;
   }

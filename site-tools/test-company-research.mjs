@@ -26,3 +26,10 @@ for (const m of article.matchAll(/href="#([^"]+)"/g)) {
   assert.ok(ids.has(m[1]), `Missing anchor: ${m[1]}`);
 }
 console.log("Company research checks passed: exact edited HTML, PB chart, valuation section and local anchors.");
+
+assert.match(article, /coal-supply-base-map\.png/, "coal supply map must remain linked");
+assert.deepEqual(
+  fs.readFileSync(path.join(siteDir, "blog/company-research/baofeng-energy/coal-supply-base-map.png")),
+  fs.readFileSync(path.join(toolsDir, "content/baofeng-energy/coal-supply-base-map.png")),
+  "published map must match its source"
+);

@@ -59,6 +59,7 @@
     "tags": ["宝丰能源", "煤制烯烃", "产能周期", "差异化分红"],
     "format": "html-snapshot",
     "source": "baofeng-energy.html",
+    "assets": ["baofeng-energy/coal-supply-base-map.png"],
     "minutes": 38
   }
 ]
